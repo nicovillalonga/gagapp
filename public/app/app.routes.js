@@ -46,8 +46,14 @@ angular.module('app.routes', ['ngRoute'])
 			templateUrl: 'app/views/pages/register.html',
 			controller: 'mainController',
 			controllerAs: 'register'
-		});
+		})
 
+		.when('/verify', {
+			templateUrl: 'app/views/pages/users/all.html',
+			controller: 'userController',
+			controllerAs: 'user'
+		});
+		
 
 		// get rid of the hash in the URL
 		$locationProvider.html5Mode(true);

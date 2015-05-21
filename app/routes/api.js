@@ -77,36 +77,43 @@ module.exports = function(app, express) {
 	
 	// route middleware to verify a token excepting register
 	apiRouter.use('/', function(req, res, next) {
-		var regex = /((\/userName\/.+)|(\/users\/))/;
-					
-		console.log('regex --- ' + regex.test(req.path));
+		var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+))/;
+		
+		console.log(req.path);
+		console.log(req.method);
+		console.log(req.path + '    - ' + 'regex - ' + dontAuth.test(req.path));
 
-		console.log('Somebody just came to our app!');
-		// check header or url parameters or post parameters for token
-		var token = req.body.token || req.param('token') || req.headers['x-access-token'];
-		// decode token
-		if (token) {
-			// verifies secret and checks exp
-			jwt.verify(token, superSecret, function(err, decoded) {
-				if (err) {
-					return res.status(403).send({
-						success: false,
-						message: 'Failed to authenticate token.'
-					});
-				} else {
-					// if everything is good, save to request for use in other routes
-					req.decoded = decoded;
-					next();
-				}
-			});
+		//if a url is contained in dontAuth then it should escape the authentication
+		if(dontAuth.test(req.path) || (req.path === '/users/' && req.method === 'POST')) {
+			next();
 		} else {
-			// if there is no token
-			// return an HTTP response of 403 (access forbidden) and an error message
-			return res.status(403).send({
-				success: false,
-				message: 'No token provided.'
-			});
-		}		
+			console.log('Somebody just came to our app!');
+			// check header or url parameters or post parameters for token
+			var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+			// decode token
+			if (token) {
+				// verifies secret and checks exp
+				jwt.verify(token, superSecret, function(err, decoded) {
+					if (err) {
+						return res.status(403).send({
+							success: false,
+							message: 'Failed to authenticate token.'
+						});
+					} else {
+						// if everything is good, save to request for use in other routes
+						req.decoded = decoded;
+						next();
+					}
+				});
+			} else {
+				// if there is no token
+				// return an HTTP response of 403 (access forbidden) and an error message
+				return res.status(403).send({
+					success: false,
+					message: 'No token provided.'
+				});
+			}
+		}
 	});
 
 
@@ -130,7 +137,7 @@ module.exports = function(app, express) {
 
 		var username = req.body.username;
 
-		rand = Math.floor((Math.random() * 100) + 54);
+		rand = Math.floor((Math.random() * 10000) + 54);
 	    host = req.get('host');
 	    link = "http://" + req.get('host') + "/verify?id=" + rand + "&username=" + username;
 
@@ -159,22 +166,27 @@ module.exports = function(app, express) {
 
 
 	app.get('/verify',function(req,res){
+		console.log(req.path);
 		console.log(req.protocol+":/"+req.get('host'));
 		if((req.protocol + "://" + req.get('host')) === ("http://" + host)) {
 		    console.log("Domain is matched. Information is from Authentic email");
 		    if(req.query.id == rand) {
 		        console.log("email is verified");
 		        console.log("username: " + req.query.username);
-		        User.find({username: req.query.username}, function(err, user) {
+		        User.findOne({username: req.query.username}, function(err, user) {
 		        	if (err) res.send(err);
 
-		        	console.log(user);
-		        	if(!user){
+		        	console.log('user --- ' + user);
+		        	if(user){
 		        		user.validated = true;
 			        	user.save(function(err) {
-			        		if (err) res.send(err);
+			        		if (err) {
+			        			console.log(err);
+			        			res.send(err);
+			        		}
 
-			        		res.json({success: true, message: 'User validated'});
+			        		//res.json({success: true, message: 'User validated'});
+			        		res.redirect('/users');
 			        	});	
 		        	} else {
 		        		res.json({success: false, message: 'Error while validating user'});

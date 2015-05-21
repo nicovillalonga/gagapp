@@ -13,6 +13,8 @@ angular.module('mainCtrl', [])
 				vm.username = $window.sessionStorage.getItem('username');
 				if($location.path() === '/')
 					$location.path('/users');
+			} else {
+				$location.path('/login');
 			}
 
 			/* get user information on route change
@@ -30,7 +32,6 @@ angular.module('mainCtrl', [])
 			// clear the error
 			vm.error = '';
 			login(vm.loginData.username, vm.loginData.password);
-			$location.path('/users');
 		};
 
 
@@ -90,34 +91,16 @@ angular.module('mainCtrl', [])
 					User.create(userData).success(function(data) {
 						console.log(data);
 						if(data.success === false) {
-							vm.error = 'Error while processing.. try again later';
+							//vm.error = data.message;
+							vm.error = 'Email already in use';
 						} else {
 							Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
-								//$location.path('/sendRegister/' + vm.registerData.email + vm.registerData.username);
 								$location.path('/sendRegister');
 							}).error(function(data){
 								console.log(data);
 							});
 						}
 					});
-					
-					/*user = new User();
-					user.email = vm.registerData.email;
-					user.username = vm.registerData.username;
-					user.password = vm.registerData.password;
-
-					user.save(function(error) {
-						if(error) {
-							vm.error = 'Error while processing.. try again later';
-						} else {
-							Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
-								//$location.path('/sendRegister/' + vm.registerData.email + vm.registerData.username);
-								$location.path('/sendRegister');
-							}).error(function(data){
-								console.log(data);
-							});
-						}
-					});*/
 				}
 			});			
 		}

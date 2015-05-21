@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 	bcrypt = require('bcrypt-nodejs'),
 	// user schema
 	UserSchema = new Schema({
-	  	email: {type: String, required: true},
+	  	email: {type: String, required: true, unique: true},
 	  	username: { type: String, required: true, index: { unique: true }},
 	  	password: { type: String, required: true, select: false }, //select false no devuleve el campo por defecto
 	    validated: {type: Boolean, default: false},
