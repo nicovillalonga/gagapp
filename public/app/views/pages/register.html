@@ -1,0 +1,41 @@
+<div class="row col-sm-6 col-sm-offset-3">
+
+	<div class="jumbotron">
+		<h1>Register</h1>
+		<form ng-submit="register.sendRegister()">
+			
+			<!-- EMAIL INPUT -->
+			<div class="form-group">
+				<label>Email </label> <span class="requiredField"> *</span>
+				<!--<input type="email" placeholder="email@example.com" class="form-control" ng-model="register.registerData.email" required>-->
+				<input type="text" placeholder="cambiar el default transporter.send" class="form-control" ng-model="register.registerData.email">
+			</div>
+
+			<!-- USERNAME INPUT -->
+			<div class="form-group">
+				<label>Username </label><span class="requiredField"> *</span>
+				<input type="text" class="form-control" ng-model="register.registerData.username" required>
+			</div>
+
+			<!-- PASSWORD INPUT -->
+			<div class="form-group">
+				<label>Password </label><span class="requiredField"> *</span>
+				<input type="password" class="form-control" ng-model="register.registerData.password" required>
+			</div>
+
+			<!-- REGISTER BUTTON -->
+			<div class="alert alert-danger" ng-if="register.error">
+				{{ register.error }}
+			</div>
+			<button type="submit" class="btn btn-block btn-primary">
+				<span ng-if="!register.processing">Register</span>
+				<span ng-if="register.processing" class="spinner"><span class="glyphicon glyphicon-repeat"></span></span>
+			</button>
+
+		</form>
+
+		<br/>
+
+		<button class="btn btn-block btn-primary" ng-click="register.sendMail()">Send Mail</button>
+	</div>
+</div>

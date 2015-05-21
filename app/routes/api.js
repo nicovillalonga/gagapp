@@ -1,0 +1,340 @@
+var User = require('../models/user'),
+	jwt = require('jsonwebtoken'),
+	config = require('../../config'),
+	//directTransport = require('nodemailer-direct-transport'),
+	nodemailer = require("nodemailer"),
+	rand,
+	mailOptions,
+	host,
+	link,
+	// super secret for creating tokens
+	superSecret = config.secret,
+
+	transporter = nodemailer.createTransport('SMTP', {
+		service: 'Gmail',
+	    auth: {
+	        user: 'dashboardmean@gmail.com',
+	        pass: 'mongoexpressangularnode'
+	    }
+	});
+
+	
+
+module.exports = function(app, express) {
+
+	var apiRouter = express.Router();
+	// route to authenticate a user (POST http://localhost:8080/api/authenticate)
+	apiRouter.post('/authenticate', function(req, res) {
+		console.log(req.body);
+		// find the user
+		// select the name username and password explicitly
+		User.findOne({username: req.body.username}).select('email username password').exec(function(err, user) {
+			if (err) throw err;
+			// no user with that username was found
+			if (!user) {
+				res.json({
+					success: false,
+					message: 'Authentication failed. User not found.'
+				});
+			} else if (user) {
+				// check if password matches
+				var validPassword = user.comparePassword(req.body.password);
+				if (!validPassword) {
+					res.json({
+						success: false,
+						message: 'Authentication failed. Wrong password.'
+					});
+				} else {
+					// if user is found and password is right
+					// create a token
+					var token = jwt.sign(
+										{
+											email: user.email,
+											username: user.username
+										},
+										superSecret,
+										{
+											expiresInMinutes: 1440 // expires in 24 hours
+										});
+					// return the information including token as JSON
+					res.json({
+						success: true,
+						message: 'Enjoy your token!',
+						token: token
+					});
+				}
+			}
+		});
+	});
+
+
+
+
+
+
+
+
+	
+	// route middleware to verify a token excepting register
+	apiRouter.use('/', function(req, res, next) {
+		var regex = /((\/userName\/.+)|(\/users\/))/;
+					
+		console.log('regex --- ' + regex.test(req.path));
+
+		console.log('Somebody just came to our app!');
+		// check header or url parameters or post parameters for token
+		var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+		// decode token
+		if (token) {
+			// verifies secret and checks exp
+			jwt.verify(token, superSecret, function(err, decoded) {
+				if (err) {
+					return res.status(403).send({
+						success: false,
+						message: 'Failed to authenticate token.'
+					});
+				} else {
+					// if everything is good, save to request for use in other routes
+					req.decoded = decoded;
+					next();
+				}
+			});
+		} else {
+			// if there is no token
+			// return an HTTP response of 403 (access forbidden) and an error message
+			return res.status(403).send({
+				success: false,
+				message: 'No token provided.'
+			});
+		}		
+	});
+
+
+
+
+
+
+
+
+	// test route to make sure everything is working
+	// accessed at GET http://localhost:8080/api
+	apiRouter.get('/', function(req, res) {
+		res.json({ message: 'hooray! welcome to our api!' });
+	});
+
+
+
+
+	apiRouter.post('/sendRegister/:email/:username', function(req, res) {
+		console.log('sending mail ----------------');
+
+		var username = req.body.username;
+
+		rand = Math.floor((Math.random() * 100) + 54);
+	    host = req.get('host');
+	    link = "http://" + req.get('host') + "/verify?id=" + rand + "&username=" + username;
+
+	    mailPayload = {
+	    	from: 'dashboardmean@gmail.com',
+		    //to: req.body.email,
+		    to: 'nicovillalonga90@gmail.com',
+		    subject: 'Confirmation Mail',
+		    html: "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
+	    }
+
+		transporter.sendMail(mailPayload, function(err, info) {
+			if(err){
+    	    	console.log(err);
+    	    	res.send(err);
+		    } else {
+		    	console.log('mail sent!');
+		    	res.send('mail sent');
+		    }
+
+		    transporter.close();
+		});
+	});
+
+
+
+
+	app.get('/verify',function(req,res){
+		console.log(req.protocol+":/"+req.get('host'));
+		if((req.protocol + "://" + req.get('host')) === ("http://" + host)) {
+		    console.log("Domain is matched. Information is from Authentic email");
+		    if(req.query.id == rand) {
+		        console.log("email is verified");
+		        console.log("username: " + req.query.username);
+		        User.find({username: req.query.username}, function(err, user) {
+		        	if (err) res.send(err);
+
+		        	console.log(user);
+		        	if(!user){
+		        		user.validated = true;
+			        	user.save(function(err) {
+			        		if (err) res.send(err);
+
+			        		res.json({success: true, message: 'User validated'});
+			        	});	
+		        	} else {
+		        		res.json({success: false, message: 'Error while validating user'});
+		        	}
+		        	
+		        });
+		    } else {
+		        console.log("email is not verified");
+		    }
+		} else {
+		    console.log("Request is from unknown source");
+		}
+	});
+
+
+
+
+
+	apiRouter.route('/register')
+		.post(function(req, res) {
+			// create a new instance of the User model
+			var token,
+				user = new User();
+			// set the users information (comes from the request)
+			user.email = req.body.email;
+			user.username = req.body.username;
+			user.password = req.body.password;
+			user.hasConfirm = true;
+
+			
+			// save the user and check for errors
+			user.save(function(err) {
+				if (err) {
+					// duplicate entry
+					if (err.code === 11000)
+						return res.json({ success: false, message: 'A user with that username already exists. '});
+					else
+						return res.send(err);
+				}
+
+				token = jwt.sign(
+									{
+										email: user.email,
+										username: user.username
+									},
+									superSecret,
+									{
+										expiresInMinutes: 1440 // expires in 24 hours
+									}
+								);
+
+				res.json({ message: 'User created!.. email: ' + user.email + ' -- username: ' + user.username});
+			});
+		});
+
+
+
+
+
+	// on routes that end in /users
+	apiRouter.route('/users')
+		// create a user (accessed at POST http://localhost:8080/api/users)
+		.post(function(req, res) {
+			// create a new instance of the User model
+			var user = new User();
+			// set the users information (comes from the request)
+			user.email = req.body.email;
+			user.username = req.body.username;
+			user.password = req.body.password;
+			// save the user and check for errors
+			user.save(function(err) {
+				if (err) {
+					// duplicate entry
+					if (err.code === 11000)
+						return res.json({ success: false, message: 'A user with that username already exists. '});
+					else
+						return res.send({success: false, err: err});
+				}
+
+				res.json({ message: 'User created!.. email: ' + user.email + ' -- username: ' + user.username});
+			});
+		})
+		.get(function(req, res) {
+			User.find(function(err, users) {
+				if (err) res.send(err);
+				// return the users
+				res.json(users);
+			});
+		});
+		/*.delete(function(req, res) {
+			User.delete({}, function(err, user) {
+				if (err) return res.send(err);
+				res.json({ message: 'Successfully deleted' });
+			});
+		});*/
+
+
+
+	// on routes that end in /users/:user_id
+	apiRouter.route('/users/:user_id')
+		// get the user with that id
+		// (accessed at GET http://localhost:8080/api/users/:user_id)
+		.get(function(req, res) {
+			User.findById(req.params.user_id, function(err, user) {
+				if (err) res.send(err);
+					// return that user
+					res.json(user);
+			});
+		})
+		// update the user with this id
+		// (accessed at PUT http://localhost:8080/api/users/:user_id)
+		.put(function(req, res) {
+			// use our user model to find the user we want
+			User.findById(req.params.user_id, function(err, user) {
+				if (err) res.send(err);
+				//update the users info only if its new
+				if (req.body.email) user.email = req.body.email;
+				if (req.body.username) user.username = req.body.username;
+				if (req.body.password) user.password = req.body.password;
+
+				// save the user
+				user.save(function(err) {
+					if (err) res.send(err);
+					res.json({ message: 'User updated!' });
+				});
+			});
+		})
+		// delete the user with this id
+		// (accessed at DELETE http://localhost:8080/api/users/:user_id)
+		.delete(function(req, res) {
+			User.remove({ _id: req.params.user_id }, function(err, user) {
+				if (err) return res.send(err);
+				res.json({ message: 'Successfully deleted' });
+			});
+		});
+
+
+
+
+	apiRouter.route('/userName/:username')
+		.get(function(req, res) {
+			User.find({username: req.params.username}, function(err, user) {
+				if (err) res.send(err);
+				res.json(user);
+			});	
+		});
+
+
+
+
+	/*
+	apiRouter.route('/register')
+		.post(function(req, res) {
+
+		});
+	*/
+
+
+
+
+		
+	return apiRouter;
+};
