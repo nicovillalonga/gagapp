@@ -6,17 +6,15 @@ var mongoose = require('mongoose'),
 	UserSchema = new Schema({
 	  	email: {type: String, required: true, unique: true},
 	  	username: { type: String, required: true, index: { unique: true }},
-	  	password: { type: String, required: true, select: false }, //select false no devuleve el campo por defecto
+	  	password: { type: String, required: true}, //, select: false no devuleve el campo por defecto
 	    validated: {type: Boolean, default: false},
 		createdDate: {type: Date, default: Date.now}
 	});
 
 // hash the password before the user is saved
 UserSchema.pre('save', function(next) {
-	var user = this;
 	// hash the password only if the password has been changed or user is new
 	if (!user.isModified('password')) return next();
-	// generate the hash
 	bcrypt.hash(user.password, null, null, function(err, hash) {
 		if (err) return next(err);
 		// change the password to the hashed version

@@ -48,10 +48,10 @@ angular.module('app.routes', ['ngRoute'])
 			controllerAs: 'register'
 		})
 
-		.when('/verify', {
-			templateUrl: 'app/views/pages/users/all.html',
-			controller: 'userController',
-			controllerAs: 'user'
+		.when('/verify/:username', {
+			templateUrl: 'app/views/pages/verify.html',
+			controller: 'verifyController',
+			controllerAs: 'verify'
 		});
 		
 

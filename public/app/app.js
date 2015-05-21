@@ -4,6 +4,7 @@ angular.module('userApp', [
 	'authService',
 	'mainCtrl',
 	'userCtrl',
+	'verifyCtrl',
 	'userService'
 ])
 

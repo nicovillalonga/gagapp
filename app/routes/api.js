@@ -77,7 +77,7 @@ module.exports = function(app, express) {
 	
 	// route middleware to verify a token excepting register
 	apiRouter.use('/', function(req, res, next) {
-		var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+))/;
+		var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
 		
 		console.log(req.path);
 		console.log(req.method);
@@ -186,7 +186,7 @@ module.exports = function(app, express) {
 			        		}
 
 			        		//res.json({success: true, message: 'User validated'});
-			        		res.redirect('/users');
+			        		res.redirect('/verify/' + user.username);
 			        	});	
 		        	} else {
 		        		res.json({success: false, message: 'Error while validating user'});

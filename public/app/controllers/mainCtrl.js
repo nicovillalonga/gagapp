@@ -1,5 +1,5 @@
 angular.module('mainCtrl', [])
-	.controller('mainController', ['$scope', '$rootScope', '$location', '$window', 'Auth', 'User', function($scope, $rootScope, $location, $window, Auth, User) {
+	.controller('mainController', ['$rootScope', '$location', '$window', 'Auth', 'User', function($rootScope, $location, $window, Auth, User) {
 		var vm = this;
 
 		// get info if a person is logged in
@@ -13,9 +13,9 @@ angular.module('mainCtrl', [])
 				vm.username = $window.sessionStorage.getItem('username');
 				if($location.path() === '/')
 					$location.path('/users');
-			} else {
+			}/* else {
 				$location.path('/login');
-			}
+			}*/
 
 			/* get user information on route change
 			Auth.getUser();.success(function(data) {
