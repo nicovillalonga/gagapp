@@ -143,8 +143,8 @@ module.exports = function(app, express) {
 
 	    mailPayload = {
 	    	from: 'dashboardmean@gmail.com',
-		    //to: req.body.email,
-		    to: 'nicovillalonga90@gmail.com',
+		    to: req.body.email,
+		    //to: 'nicovillalonga90@gmail.com',
 		    subject: 'Confirmation Mail',
 		    html: "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
 	    }
