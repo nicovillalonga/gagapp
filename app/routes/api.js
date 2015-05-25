@@ -9,8 +9,10 @@ var User = require('../models/user'),
 	link,
 	// super secret for creating tokens
 	superSecret = config.secret,
-
-	transporter = nodemailer.createTransport('SMTP', {
+    
+    //i have a problem with nodemailer so i found this
+    //http://stackoverflow.com/questions/24876036/error-connect-eaddrnotavail
+	transporter = nodemailer.createTransport({
 		service: 'Gmail',
 	    auth: {
 	        user: 'dashboardmean@gmail.com',

@@ -83,7 +83,8 @@ angular.module('mainCtrl', [])
 					vm.error = 'Username already in use';
 				} else {
 					userData = {
-						email: 'nicovilllalonga90@gmail.com',
+                        email: vm.registerData.email,
+						//email: 'nicovilllalonga90@gmail.com',
 						username: vm.registerData.username,
 						password: vm.registerData.password
 					};
