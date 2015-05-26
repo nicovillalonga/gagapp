@@ -1,3 +1,18 @@
+//NICO
+module.exports = {
+	'port': process.env.PORT || 8080,
+	'database': 'mongodb://localhost/mmachineExpress',
+	'secret': 'ilovescotchscotchyscotchscotch'
+};
+
+
+
+
+
+
+
+//AGUS
+/*
 var mongoose = require('mongoose');
 
 module.exports = {
@@ -5,8 +20,10 @@ module.exports = {
 	'database': 'mongodb://localhost/mmachineExpress',
 	'secret': 'ilovescotchscotchyscotchscotch'
 };
+*/
 
 /** Conexion a MongoLab */
+/*
 var user = "agusburgos";
 var password = "aprendiendo";
 //var address = "@ds031882.mongolab.com:31882/meanapp";
@@ -24,3 +41,4 @@ var options = {
 } 
 
 mongoose.connect(url);
+*/
