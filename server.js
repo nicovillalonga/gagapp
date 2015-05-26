@@ -34,7 +34,7 @@ app.use(morgan('dev'));
 
 
 //database connection
-mongoose.connect(config.database);
+//mongoose.connect(config.database);
 
 
 // set static files location

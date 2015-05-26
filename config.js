@@ -1,3 +1,4 @@
+var mongoose = require('mongoose');
 
 module.exports = {
 	'port': process.env.PORT || 8080,
@@ -5,38 +6,21 @@ module.exports = {
 	'secret': 'ilovescotchscotchyscotchscotch'
 };
 
+/** Conexion a MongoLab */
+var user = "agusburgos";
+var password = "aprendiendo";
+//var address = "@ds031882.mongolab.com:31882/meanapp";
+var address = "@ds043200.mongolab.com:43200/aprendiendo";
 
-/*
-var env = process.env.NODE_ENV || 'development';
-	user = "gadb",
-	password = "probandom0ng0",
-address = "@ds033607.mongolab.com:33607/agdb",
-	url = 'mongodb://' + user + ':' + password + address;
-	//address = "ds045057.mongolab.com:45057/gadb",
-	//url = 'mongo ' + address + ' -u ' + user + ' -p ' + password;
+var url = 'mongodb://' + user + ':' + password + address;
 
-module.exports = {
-	'port': process.env.PORT || 8080,
-	'database': url,
-	'secret': 'ilovescotchscotchyscotchscotch'
-};
-*/
-
-/*
-var mongoose = require('mongoose'),
-	env = process.env.NODE_ENV || 'development',
-	user = "gadb",
-	password = "probandom0ng0",
-	address = "@ds033607.mongolab.com:33607/agdb",
-	url = 'mongodb://' + user + ':' + password + address;
- //address = "ds045057.mongolab.com:45057/gadb",
- //url = 'mongo ' + address + ' -u ' + user + ' -p ' + password;
-
-module.exports = {
- 'port': process.env.PORT || 8080,
- 'database': url,
- 'secret': 'ilovescotchscotchyscotchscotch'
-};
+var options = {
+  db: { native_parser: true },
+  server: { poolSize: 5, 
+            keepAlive: 1 },
+  replset: { rs_name: 'myReplicaSetName' },
+  user: 'agusburgos',
+  pass: 'aprendiendo'
+} 
 
 mongoose.connect(url);
-*/
