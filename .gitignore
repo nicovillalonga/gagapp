@@ -27,3 +27,7 @@ build/Release
 node_modules
 dist
 .tmp
+
+# Personal configuration
+config.js
+server.js
