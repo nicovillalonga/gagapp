@@ -147,25 +147,48 @@ module.exports = function(app, express) {
 		    to: 'nicovillalonga90@gmail.com',
 		    subject: 'Confirmation Mail',
 		    html: "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
-	    }
+	    };
 
-		transporter.sendMail(mailPayload, function(err, info) {
-			if(err){
-    	    	console.log(err);
-    	    	res.send(err);
-		    } else {
-		    	console.log('mail sent!');
-		    	res.send('mail sent');
-		    }
+	    User.findOne({username: username}, function(err, user) {
+	    	if (!err) {
+	    		console.log('usr finded');
+	    		//saves de random number to the user in case after email is sent page is close
+	    		user.validatorId = rand;
+	    		user.save(function(err) {
+	    			if(!err) {
+	    				console.log('usr saved');
+	    				//after saving randId, email is sent
+	    				transporter.sendMail(mailPayload, function(err, info) {
+							if(err){
+								console.log('mail NOT sent');
+				    	    	console.log(err);
+				    	    	res.send(err);
+						    } else {
+						    	console.log('mail sent!');
+						    	res.send('mail sent');
+						    }
 
-		    transporter.close();
-		});
+						    transporter.close();
+						});
+	    			}
+	    		});
+	    	}
+	    });
+
+		
 	});
 
 
 
 
 	app.get('/verify',function(req,res){
+		var user = {};
+		User.findOne({username: req.query.username}, function(err, usr) {
+			if (err) res.send(err);
+
+			user = usr;
+		});
+
 		console.log(req.path);
 		console.log(req.protocol+":/"+req.get('host'));
 		if((req.protocol + "://" + req.get('host')) === ("http://" + host)) {
@@ -173,28 +196,29 @@ module.exports = function(app, express) {
 		    if(req.query.id == rand) {
 		        console.log("email is verified");
 		        console.log("username: " + req.query.username);
-		        User.findOne({username: req.query.username}, function(err, user) {
-		        	if (err) res.send(err);
 
-		        	console.log('user --- ' + user);
-		        	if(user){
-		        		user.validated = true;
-			        	user.save(function(err) {
-			        		if (err) {
-			        			console.log(err);
-			        			res.send(err);
-			        		}
+	        	console.log('user --- ' + user);
+	        	if(user){
+	        		user.validated = true;
+		        	user.save(function(err) {
+		        		if (err) {
+		        			console.log(err);
+		        			res.send(err);
+		        		}
 
-			        		//res.json({success: true, message: 'User validated'});
-			        		res.redirect('/verify/' + user.username);
-			        	});	
-		        	} else {
-		        		res.json({success: false, message: 'Error while validating user'});
-		        	}
-		        	
-		        });
+		        		//res.json({success: true, message: 'User validated'});
+		        		res.redirect('/verify/' + user.username);
+		        	});
+	        	} else {
+	        		res.json({success: false, message: 'Error while validating user'});
+	        	}
 		    } else {
-		        console.log("email is not verified");
+		    	//session was closed, then check the url id with id in db
+		    	if(user && user.validatorId === req.query.id) {
+		    		res.redirect('/verify/' + user.username);
+		    	} else {
+		        	console.log("email is not verified");
+		    	}
 		    }
 		} else {
 		    console.log("Request is from unknown source");
