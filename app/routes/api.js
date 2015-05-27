@@ -134,7 +134,7 @@ module.exports = function(app, express) {
 
 
 	apiRouter.post('/sendRegister/:email/:username', function(req, res) {
-		console.log('sending mail ----------------');
+		console.log('sending mail to ' + req.body.email + '----------------');
 
 		var username = req.body.username;
 
@@ -206,12 +206,13 @@ module.exports = function(app, express) {
 			        		res.redirect('/verify/' + user.username);
 			        	});
 		        	} else {
-		        		//res.redirect('/verifyError/ + username');
-		        		res.json({success: false, message: 'Error while validating user'});
+		        		//error while retrieving user
+		        		res.redirect('/verifyError');
 		        	}
 				});	
 	        	
 		    } else {
+		    	//mismatch in randIds
 		    	console.log("email is not verified");
     			res.redirect('/verifyError');
 		    }

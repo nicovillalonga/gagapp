@@ -52,6 +52,10 @@ angular.module('app.routes', ['ngRoute'])
 			templateUrl: 'app/views/pages/verify.html',
 			controller: 'verifyController',
 			controllerAs: 'verify'
+		})
+
+		.when('/verifyError', {
+			templateUrl: 'app/views/pages/verifyError.html'
 		});
 		
 
