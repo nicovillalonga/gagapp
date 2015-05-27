@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
 	  	username: { type: String, required: true, index: { unique: true }},
 	  	password: { type: String, required: true}, //, select: false no devuleve el campo por defecto
 	    validated: {type: Boolean, default: false},
+	    validatorId: {type: String},
 		createdDate: {type: Date, default: Date.now}
 	});
 

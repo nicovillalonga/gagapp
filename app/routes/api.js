@@ -77,7 +77,8 @@ module.exports = function(app, express) {
 	
 	// route middleware to verify a token excepting register
 	apiRouter.use('/', function(req, res, next) {
-		var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
+		//var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
+		var dontAuth = /((\/userName\/.+)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
 		
 		console.log(req.path);
 		console.log(req.method);
@@ -137,14 +138,14 @@ module.exports = function(app, express) {
 
 		var username = req.body.username;
 
-		rand = Math.floor((Math.random() * 10000) + 54);
-	    host = req.get('host');
+		rand = Math.floor((Math.random() * 10000) + 100000);
+		host = req.get('host');
 	    link = "http://" + req.get('host') + "/verify?id=" + rand + "&username=" + username;
 
 	    mailPayload = {
 	    	from: 'dashboardmean@gmail.com',
-		    //to: req.body.email,
-		    to: 'nicovillalonga90@gmail.com',
+		    to: req.body.email,
+		    //to: 'nicovillalonga90@gmail.com',
 		    subject: 'Confirmation Mail',
 		    html: "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
 	    };
@@ -156,7 +157,7 @@ module.exports = function(app, express) {
 	    		user.validatorId = rand;
 	    		user.save(function(err) {
 	    			if(!err) {
-	    				console.log('usr saved');
+	    				console.log('rand saved: ' + rand);
 	    				//after saving randId, email is sent
 	    				transporter.sendMail(mailPayload, function(err, info) {
 							if(err){
@@ -182,46 +183,51 @@ module.exports = function(app, express) {
 
 
 	app.get('/verify',function(req,res){
-		var user = {};
-		User.findOne({username: req.query.username}, function(err, usr) {
-			if (err) res.send(err);
+		var username = req.query.username;
 
-			user = usr;
-		});
-
-		console.log(req.path);
-		console.log(req.protocol+":/"+req.get('host'));
+		console.log(req.protocol + ":/" + req.get('host') + req.path);
 		if((req.protocol + "://" + req.get('host')) === ("http://" + host)) {
 		    console.log("Domain is matched. Information is from Authentic email");
 		    if(req.query.id == rand) {
-		        console.log("email is verified");
-		        console.log("username: " + req.query.username);
+		        console.log("email is verified, username: " + username);
 
-	        	console.log('user --- ' + user);
-	        	if(user){
-	        		user.validated = true;
-		        	user.save(function(err) {
-		        		if (err) {
-		        			console.log(err);
-		        			res.send(err);
-		        		}
+	        	User.findOne({username: username}, function(err, user) {
+					if (err) res.send(err);
 
-		        		//res.json({success: true, message: 'User validated'});
-		        		res.redirect('/verify/' + user.username);
-		        	});
-	        	} else {
-	        		res.json({success: false, message: 'Error while validating user'});
-	        	}
+					if(user){
+		        		user.validated = true;
+			        	user.save(function(err) {
+			        		if (err) {
+			        			console.log(err);
+			        			res.send(err);
+			        		}
+
+			        		//res.json({success: true, message: 'User validated'});
+			        		res.redirect('/verify/' + user.username);
+			        	});
+		        	} else {
+		        		//res.redirect('/verifyError/ + username');
+		        		res.json({success: false, message: 'Error while validating user'});
+		        	}
+				});	
+	        	
 		    } else {
-		    	//session was closed, then check the url id with id in db
-		    	if(user && user.validatorId === req.query.id) {
-		    		res.redirect('/verify/' + user.username);
-		    	} else {
-		        	console.log("email is not verified");
-		    	}
+		    	console.log("email is not verified");
+    			res.redirect('/verifyError');
 		    }
 		} else {
-		    console.log("Request is from unknown source");
+		    console.log("Cuando este hosteado definir host como heroku.asd.. por si se corta el server");
+		    //server was closed, then checks the url id with id in db
+	    	/*
+	    	console.log('email verified, session CLOSED');
+	    	User.findOne({username: username}, function(err, user) {
+				if (err) res.send(err);
+
+		    	if(user && user.validatorId === req.query.id) {
+		    		res.redirect('/verify/' + user.username);
+		    	}
+			});	
+    		*/
 		}
 	});
 

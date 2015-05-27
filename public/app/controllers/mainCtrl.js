@@ -83,7 +83,8 @@ angular.module('mainCtrl', [])
 					vm.error = 'Username already in use';
 				} else {
 					userData = {
-						email: 'nicovilllalonga90@gmail.com',
+						email: vm.registerData.email,
+						//email: 'nicovilllalonga90@gmail.com',
 						username: vm.registerData.username,
 						password: vm.registerData.password
 					};
@@ -94,11 +95,10 @@ angular.module('mainCtrl', [])
 							//vm.error = data.message;
 							vm.error = 'Email already in use';
 						} else {
-							Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
-								$location.path('/sendRegister');
-							}).error(function(data){
+							Auth.sendRegister(vm.registerData.email, vm.registerData.username).error(function(data){
 								console.log(data);
 							});
+							$location.path('/sendRegister');
 						}
 					});
 				}
