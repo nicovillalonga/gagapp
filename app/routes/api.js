@@ -12,7 +12,7 @@ var User = require('../models/user'),
     
     //i have a problem with nodemailer so i found this
     //http://stackoverflow.com/questions/24876036/error-connect-eaddrnotavail
-	transporter = nodemailer.createTransport({
+	transporter = nodemailer.createTransport('SMTP', {
 		service: 'Gmail',
 	    auth: {
 	        user: 'dashboardmean@gmail.com',
@@ -30,7 +30,7 @@ module.exports = function(app, express) {
 		console.log(req.body);
 		// find the user
 		// select the name username and password explicitly
-		User.findOne({username: req.body.username}).select('email username password').exec(function(err, user) {
+		User.findOne({username: req.body.username}).select('email username password validated').exec(function(err, user) {
 			if (err) throw err;
 			// no user with that username was found
 			if (!user) {
@@ -39,30 +39,39 @@ module.exports = function(app, express) {
 					message: 'Authentication failed. User not found.'
 				});
 			} else if (user) {
-				// check if password matches
-				var validPassword = user.comparePassword(req.body.password);
-				if (!validPassword) {
-					res.json({
-						success: false,
-						message: 'Authentication failed. Wrong password.'
-					});
+				//if user is mail validated then checks the password 
+				if(user.validated){
+					// check if password matches
+					var validPassword = user.comparePassword(req.body.password);
+					if (!validPassword) {
+						res.json({
+							success: false,
+							message: 'Authentication failed. Wrong password.'
+						});
+					} else {
+						// if user is found and password is right
+						// create a token
+						var token = jwt.sign(
+											{
+												email: user.email,
+												username: user.username
+											},
+											superSecret,
+											{
+												expiresInMinutes: 1440 // expires in 24 hours
+											});
+						// return the information including token as JSON
+						res.json({
+							success: true,
+							message: 'Enjoy your token!',
+							token: token
+						});
+					}
 				} else {
-					// if user is found and password is right
-					// create a token
-					var token = jwt.sign(
-										{
-											email: user.email,
-											username: user.username
-										},
-										superSecret,
-										{
-											expiresInMinutes: 1440 // expires in 24 hours
-										});
-					// return the information including token as JSON
+					//user has not yet validated email
 					res.json({
-						success: true,
-						message: 'Enjoy your token!',
-						token: token
+							success: false,
+							message: 'User has not yet been validated, please check your email'
 					});
 				}
 			}
@@ -149,7 +158,7 @@ module.exports = function(app, express) {
 		    to: req.body.email,
 		    //to: 'nicovillalonga90@gmail.com',
 		    subject: 'Confirmation Mail',
-		    html: "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
+		    html: "<div marginwidth='0' marginheight='0' style='font-family: Lato,sans-serif; font-size: 15px; color: rgb(102, 102, 102);'><table color='#666666' align='center' bgcolor='#ffffff' border='0' cellpadding='0' cellspacing='0' width='100%'><tbody><tr bgcolor='#ffffff'><td style='padding:10px 0;color:#ffffff' valign='top'></td></tr><tr bgcolor='#ffffff'><td height='10px'></td></tr><tr><td style='padding:0px 50px 0px 50px'><p><b><span style='font-size:23px'>Hello " + username +", Welcome to <span style='color:#e84c3d' target='_blank'> laGAGapp</a></span></b></p><h1><b> Please click on the button to verify your email</b>:</h1><a style='color:#ffffff;background:#e84c3d;padding:18px 25px;text-align:center;border-radius:8px;text-decoration:none;display:block' href=" + link + " target='_blank'>Click ME !!</a></td></tr></tbody></table></div>"
 	    };
 
 	    User.findOne({username: username}, function(err, user) {

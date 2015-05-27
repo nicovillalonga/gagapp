@@ -27,10 +27,12 @@
 	<!-- LOOP OVER THE USERS -->
 	<tr ng-repeat="person in user.users">
 		<!--<td>{{ person._id }}</td>-->
+	
 		<td>{{ person.email }}</td>
 		<td>{{ person.username }}</td>
 		<td class="col-sm-2">
-			<a ng-href="/users/{{ person._id }}" class="btn btn-primary">Edit</a>
+			<a ng-if="person.validated" ng-href="/users/{{ person._id }}" class="btn btn-primary">Edit</a>
+			<label ng-if="!person.validated">validation pending</label>
 			<a href="#" ng-click="user.deleteUser(person._id)" class="btn btn-danger">Delete</a>
 		</td>
 	</tr>
