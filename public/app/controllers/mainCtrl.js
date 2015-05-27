@@ -95,11 +95,10 @@ angular.module('mainCtrl', [])
 							//vm.error = data.message;
 							vm.error = 'Email already in use';
 						} else {
-							Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
-								$location.path('/sendRegister');
-							}).error(function(data){
+							Auth.sendRegister(vm.registerData.email, vm.registerData.username).error(function(data){
 								console.log(data);
 							});
+							$location.path('/sendRegister');
 						}
 					});
 				}

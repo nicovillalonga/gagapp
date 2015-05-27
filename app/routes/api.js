@@ -79,7 +79,8 @@ module.exports = function(app, express) {
 	
 	// route middleware to verify a token excepting register
 	apiRouter.use('/', function(req, res, next) {
-		var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
+		//var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
+		var dontAuth = /((\/userName\/.+)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
 		
 		console.log(req.path);
 		console.log(req.method);
@@ -135,12 +136,12 @@ module.exports = function(app, express) {
 
 
 	apiRouter.post('/sendRegister/:email/:username', function(req, res) {
-		console.log('sending mail ----------------');
+		console.log('sending mail to ' + req.body.email + '----------------');
 
 		var username = req.body.username;
 
-		rand = Math.floor((Math.random() * 10000) + 54);
-	    host = req.get('host');
+		rand = Math.floor((Math.random() * 10000) + 100000);
+		host = req.get('host');
 	    link = "http://" + req.get('host') + "/verify?id=" + rand + "&username=" + username;
 
 	    mailPayload = {
@@ -148,39 +149,52 @@ module.exports = function(app, express) {
 		    to: req.body.email,
 		    //to: 'nicovillalonga90@gmail.com',
 		    subject: 'Confirmation Mail',
-		    //html: "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"            
-            html: "<div marginwidth='0' marginheight='0' style='font-family: Lato,sans-serif; font-size: 15px; color: rgb(102, 102, 102);'><table color='#666666' align='center' bgcolor='#ffffff' border='0' cellpadding='0' cellspacing='0' width='100%'><tbody><tr bgcolor='#ffffff'><td style='padding:10px 0;color:#ffffff' valign='top'></td></tr><tr bgcolor='#ffffff'><td height='10px'></td></tr><tr><td style='padding:0px 50px 0px 50px'><p><b><span style='font-size:23px'>Hello " + username +", Welcome to <span style='color:#e84c3d' target='_blank'> laGAGapp</a></span></b></p><h1><b> Please click on the button to verify your email</b>:</h1><a style='color:#ffffff;background:#e84c3d;padding:18px 25px;text-align:center;border-radius:8px;text-decoration:none;display:block' href=" + link + " target='_blank'>Click ME !!</a></td></tr></tbody></table></div>"
-	    }
+		    html: "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
+	    };
 
-		transporter.sendMail(mailPayload, function(err, info) {
-			if(err){
-    	    	console.log(err);
-    	    	res.send(err);
-		    } else {
-		    	console.log('mail sent!');
-		    	res.send('mail sent');
-		    }
+	    User.findOne({username: username}, function(err, user) {
+	    	if (!err) {
+	    		console.log('usr finded');
+	    		//saves de random number to the user in case after email is sent page is close
+	    		user.validatorId = rand;
+	    		user.save(function(err) {
+	    			if(!err) {
+	    				console.log('rand saved: ' + rand);
+	    				//after saving randId, email is sent
+	    				transporter.sendMail(mailPayload, function(err, info) {
+							if(err){
+								console.log('mail NOT sent');
+				    	    	console.log(err);
+				    	    	res.send(err);
+						    } else {
+						    	console.log('mail sent!');
+						    	res.send('mail sent');
+						    }
 
-		    transporter.close();
-		});
+						    transporter.close();
+						});
+	    			}
+	    		});
+	    	}
+	    });
 	});
 
 
 
 
 	app.get('/verify',function(req,res){
-		console.log(req.path);
-		console.log(req.protocol+":/"+req.get('host'));
+		var username = req.query.username;
+
+		console.log(req.protocol + ":/" + req.get('host') + req.path);
 		if((req.protocol + "://" + req.get('host')) === ("http://" + host)) {
 		    console.log("Domain is matched. Information is from Authentic email");
 		    if(req.query.id == rand) {
-		        console.log("email is verified");
-		        console.log("username: " + req.query.username);
-		        User.findOne({username: req.query.username}, function(err, user) {
-		        	if (err) res.send(err);
+		        console.log("email is verified, username: " + username);
 
-		        	console.log('user --- ' + user);
-		        	if(user){
+	        	User.findOne({username: username}, function(err, user) {
+					if (err) res.send(err);
+
+					if(user){
 		        		user.validated = true;
 			        	user.save(function(err) {
 			        		if (err) {
@@ -190,17 +204,31 @@ module.exports = function(app, express) {
 
 			        		//res.json({success: true, message: 'User validated'});
 			        		res.redirect('/verify/' + user.username);
-			        	});	
+			        	});
 		        	} else {
-		        		res.json({success: false, message: 'Error while validating user'});
+		        		//error while retrieving user
+		        		res.redirect('/verifyError');
 		        	}
-		        	
-		        });
+				});	
+	        	
 		    } else {
-		        console.log("email is not verified");
+		    	//mismatch in randIds
+		    	console.log("email is not verified");
+    			res.redirect('/verifyError');
 		    }
 		} else {
-		    console.log("Request is from unknown source");
+		    console.log("Cuando este hosteado definir host como heroku.asd.. por si se corta el server");
+		    //server was closed, then checks the url id with id in db
+	    	/*
+	    	console.log('email verified, session CLOSED');
+	    	User.findOne({username: username}, function(err, user) {
+				if (err) res.send(err);
+
+		    	if(user && user.validatorId === req.query.id) {
+		    		res.redirect('/verify/' + user.username);
+		    	}
+			});	
+    		*/
 		}
 	});
 
