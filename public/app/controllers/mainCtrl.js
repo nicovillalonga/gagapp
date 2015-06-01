@@ -78,8 +78,11 @@ angular.module('mainCtrl', [])
 
 		vm.sendRegister = function() {
 			var userData;
+			vm.processing = true;
+
 			User.getByUsername(vm.registerData.username).success(function(data) {
 				if(data.length !== 0) {
+					vm.processing = false;
 					vm.error = 'Username already in use';
 				} else {
 					userData = {
@@ -93,12 +96,17 @@ angular.module('mainCtrl', [])
 						console.log(data);
 						if(data.success === false) {
 							//vm.error = data.message;
+							vm.processing = false;
 							vm.error = 'Email already in use';
 						} else {
-							Auth.sendRegister(vm.registerData.email, vm.registerData.username).error(function(data){
-								console.log(data);
+							Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
+								vm.processing = false;
+								$location.path('/sendRegister');
+							})
+							.error(function(data){
+								vm.processing = false;
+								vm.error = data.message;
 							});
-							$location.path('/sendRegister');
 						}
 					});
 				}

@@ -12,7 +12,7 @@ var User = require('../models/user'),
     
     //i have a problem with nodemailer so i found this
     //http://stackoverflow.com/questions/24876036/error-connect-eaddrnotavail
-	transporter = nodemailer.createTransport('SMTP', {
+	transporter = nodemailer.createTransport({
 		service: 'Gmail',
 	    auth: {
 	        user: 'dashboardmean@gmail.com',
@@ -173,8 +173,8 @@ module.exports = function(app, express) {
 	    				transporter.sendMail(mailPayload, function(err, info) {
 							if(err){
 								console.log('mail NOT sent');
-				    	    	console.log(err);
-				    	    	res.send(err);
+				    	    	res.status(500).send({message: 'Error while sending mail', err: err});
+				    	    	//res.send(err);
 						    } else {
 						    	console.log('mail sent!');
 						    	res.send('mail sent');

@@ -1,7 +1,12 @@
 angular.module('userCtrl', ['userService'])
 
 	// controller applied to user creation page
-	.controller('userCreateController', ['User', function(User) {
+	.controller('userCreateController', ['User', '$location', '$window', function(User, $location, $window) {
+		
+		if (!$window.sessionStorage.getItem('token')) {
+			$location.path('/login');
+		}
+
 		var vm = this;
 
 		// variable to hide/show elements of the view
