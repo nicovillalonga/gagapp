@@ -13,14 +13,7 @@ angular.module('mainCtrl', [])
 				vm.username = $window.sessionStorage.getItem('username');
 				if($location.path() === '/')
 					$location.path('/users');
-			}/* else {
-				$location.path('/login');
-			}*/
-
-			/* get user information on route change
-			Auth.getUser();.success(function(data) {
-				vm.user = data;
-			});*/
+			}
 		});
 
 		vm.goToLogin = function() {
@@ -77,40 +70,33 @@ angular.module('mainCtrl', [])
 
 
 		vm.sendRegister = function() {
-			var userData;
+			var userData = {
+		            email: vm.registerData.email,
+					//email: 'nicovilllalonga90@gmail.com',
+					username: vm.registerData.username,
+					password: vm.registerData.password
+				};
+
+			vm.error = '';
 			vm.processing = true;
-
-			User.getByUsername(vm.registerData.username).success(function(data) {
-				if(data.length !== 0) {
+			/**TODO: refactor function in a service (same logic in usercreateCtrl)*/
+			User.create(userData).success(function(data) {
+				console.log(data);
+				if(data.success === false) {
+					//vm.error = data.message;
 					vm.processing = false;
-					vm.error = 'Username already in use';
+					vm.error = data.message;
 				} else {
-					userData = {
-                        email: vm.registerData.email,
-						//email: 'nicovilllalonga90@gmail.com',
-						username: vm.registerData.username,
-						password: vm.registerData.password
-					};
-
-					User.create(userData).success(function(data) {
-						console.log(data);
-						if(data.success === false) {
-							//vm.error = data.message;
-							vm.processing = false;
-							vm.error = 'Email already in use';
-						} else {
-							Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
-								vm.processing = false;
-								$location.path('/sendRegister');
-							})
-							.error(function(data){
-								vm.processing = false;
-								vm.error = data.message;
-							});
-						}
+					Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
+						vm.processing = false;
+						$location.path('/sendRegister');
+					})
+					.error(function(data){
+						vm.processing = false;
+						vm.error = data.message;
 					});
 				}
-			});			
+			});
+			
 		}
-
 	}]);

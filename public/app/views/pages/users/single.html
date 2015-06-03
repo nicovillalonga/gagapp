@@ -11,7 +11,7 @@
 		</div>
 		
 		<div class="col-sm-6">
-			<input type="text" class="form-control" ng-model="user.userData.email">
+			<input type="email" class="form-control" ng-model="user.userData.email" required>
 		</div>
 	</div>
 
@@ -22,7 +22,7 @@
 		</div>
 		
 		<div class="col-sm-6">
-			<input type="text" class="form-control" ng-model="user.userData.username" ng-required="user.type == 'create'">
+			<input type="text" class="form-control" ng-model="user.userData.username" ng-required="user.type == 'create'" required>
 		</div>
 	</div>
 
@@ -33,7 +33,7 @@
 		</div>
 
 		<div class="col-sm-6">
-			<input type="password" class="form-control" ng-model="user.userData.password" ng-required="user.type == 'create'">
+			<input type="password" class="form-control" ng-model="user.userData.password" ng-required="user.type == 'create'" required>
 		</div>
 	</div>
 

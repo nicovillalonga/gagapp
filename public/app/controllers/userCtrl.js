@@ -1,7 +1,7 @@
 angular.module('userCtrl', ['userService'])
 
 	// controller applied to user creation page
-	.controller('userCreateController', ['User', '$location', '$window', function(User, $location, $window) {
+	.controller('userCreateController', ['User', 'Auth', '$location', '$window', function(User, Auth, $location, $window) {
 		
 		if (!$window.sessionStorage.getItem('token')) {
 			$location.path('/login');
@@ -18,11 +18,24 @@ angular.module('userCtrl', ['userService'])
 			// clear the message
 			vm.message = '';
 			// use the create function in the userService
+			/**TODO: refactor function in a service (same logic in mainCtrl)*/
 			User.create(vm.userData).success(function(data) {
-				vm.processing = false;
-				// clear the form
-				vm.userData = {};
-				vm.message = data.message;
+				console.log(data);
+				if(data.success === false) {
+					//vm.error = data.message;
+					vm.processing = false;
+					vm.message = data.message;
+				} else {
+					vm.message = 'user created! -- sending verification email to ' + vm.userData.email;
+					Auth.sendRegister(vm.userData.email, vm.userData.username).success(function(data) {
+						vm.processing = false;
+						$location.path('/sendRegister');
+					})
+					.error(function(data){
+						vm.processing = false;
+						vm.message = data.message;
+					});
+				}
 			});
 		};
 	}])
