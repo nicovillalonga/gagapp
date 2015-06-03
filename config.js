@@ -26,10 +26,10 @@ module.exports = {
 
 /** Conexion a MongoLab */
 
-var user = "agusburgos";
-var password = "aprendiendo";
+var user = "gadb";
+var password = "probandom0ng0";
 //var address = "@ds031882.mongolab.com:31882/meanapp";
-var address = "@ds043200.mongolab.com:43200/aprendiendo";
+var address = "@ds045057.mongolab.com:43200/gadb";
 
 var url = 'mongodb://' + user + ':' + password + address;
 
@@ -38,8 +38,8 @@ var options = {
   server: { poolSize: 5, 
             keepAlive: 1 },
   replset: { rs_name: 'myReplicaSetName' },
-  user: 'agusburgos',
-  pass: 'aprendiendo'
+  user: 'gadb',
+  pass: 'probandom0ng0'
 } 
 
 mongoose.connect(url);
