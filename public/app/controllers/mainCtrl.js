@@ -1,5 +1,5 @@
 angular.module('mainCtrl', [])
-	.controller('mainController', ['$rootScope', '$location', '$window', 'Auth', 'User', function($rootScope, $location, $window, Auth, User) {
+	.controller('mainController', ['$rootScope', '$location', '$window', 'Auth', 'User', 'socket', function($rootScope, $location, $window, Auth, User, socket) {
 		var vm = this;
 
 		// get info if a person is logged in
@@ -81,13 +81,21 @@ angular.module('mainCtrl', [])
 			vm.processing = true;
 			/**TODO: refactor function in a service (same logic in usercreateCtrl)*/
 			User.create(userData).success(function(data) {
-				console.log(data);
+				console.log(data);				
 				if(data.success === false) {
 					//vm.error = data.message;
 					vm.processing = false;
 					vm.error = data.message;
 				} else {
 					Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
+						console.log('socket: ' + data);	
+						socket.emit('user:new', {
+							user:   {
+							            email: vm.registerData.email,										
+										username: vm.registerData.username,
+										password: vm.registerData.password
+									}
+						});					
 						vm.processing = false;
 						$location.path('/sendRegister');
 					})

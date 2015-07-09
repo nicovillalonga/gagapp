@@ -1,15 +1,19 @@
 // BASE SETUP
 // ======================================
 // CALL THE PACKAGES --------------------
-var path = require('path'),
+var http = require('http'),
+	path = require('path'),
 	express = require('express'), // call express
 	app = express(), // define our app using express
+	server = http.createServer(app), //create a server for io
+	io = require('socket.io')(server), //define real time
 	config = require('./config'),
 	bodyParser = require('body-parser'), // get body-parser
 	morgan = require('morgan'), // used to see requests
 	mongoose = require('mongoose'), // for working w/ our database
 	apiRouter = express.Router(), // get an instance of the express router
-	apiRoutes = require('./app/routes/api')(app, express);
+	apiRoutes = require('./app/routes/api')(app, express),
+	socket = require('./app/routes/socket.js');
 	/*User = require('./app/models/user'),
 	jwt = require('jsonwebtoken'),
 	superSecret = config.secret;*/
@@ -27,6 +31,7 @@ app.use(function(req, res, next) {
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
 	next();
 });
+
 
 
 // log all requests to the console
@@ -56,8 +61,11 @@ app.get('*', function(req, res) {
 	res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });
 
+// EVENTS FOR SOCKET/IO
+io.on('connection', socket);
 
 // START THE SERVER
 // ===============================
-app.listen(config.port);
+//app.listen(config.port);
+server.listen(config.port);
 console.log('Magic happens on port ' + config.port);
