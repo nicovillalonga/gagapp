@@ -1,9 +1,8 @@
 angular.module('homeCtrl', [])
+	.controller('homeController', ['$location',
+	function($location) {
 
-	.controller('homeController', ['$location', function($location) {
-		var vm = this;
-
-		vm.login = function() {
+		$scope.login = function() {
 			$location.path('/login');
 		};
 	}]);

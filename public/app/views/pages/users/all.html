@@ -9,12 +9,12 @@
 </div>
 
 <!-- LOADING MESSAGE -->
-<div class="jumbotron text-center" ng-show="user.processing">
+<div class="jumbotron text-center" ng-show="processing">
 	<span class="glyphicon glyphicon-repeat spinner"></span>
 	<p>Loading Users...</p>
 </div>
 
-<table class="table table-bordered table-striped" ng-show="user.users">
+<table class="table table-bordered table-striped" ng-show="users">
 	<thead>
 		<tr>
 			<!--<th>id</th>-->
@@ -25,15 +25,15 @@
 	</thead>
 	<tbody>
 	<!-- LOOP OVER THE USERS -->
-	<tr ng-repeat="person in user.users">
+	<tr ng-repeat="person in users">
 		<!--<td>{{ person._id }}</td>-->
 	
-		<td>{{ person.email }}</td>
-		<td>{{ person.username }}</td>
+		<td>{{ ::person.email }}</td>
+		<td>{{ ::person.username }}</td>
 		<td class="col-sm-2">
 			<a ng-if="person.validated" ng-href="/users/{{ person._id }}" class="btn btn-primary">Edit</a>
 			<label ng-if="!person.validated">validation pending</label>
-			<a href="#" ng-click="user.deleteUser(person._id)" class="btn btn-danger">Delete</a>
+			<a href="#" ng-click="deleteUser(person._id)" class="btn btn-danger">Delete</a>
 		</td>
 	</tr>
 	</tbody>
