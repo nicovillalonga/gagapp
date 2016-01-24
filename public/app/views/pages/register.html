@@ -2,34 +2,34 @@
 
 	<div class="jumbotron">
 		<h1>Register</h1>
-		<form ng-submit="register.sendRegister()">
+		<form ng-submit="sendRegister()">
 			
 			<!-- EMAIL INPUT -->
 			<div class="form-group">
 				<label>Email </label> <span class="requiredField"> *</span>
-				<input type="email" placeholder="email@example.com" class="form-control" ng-model="register.registerData.email" required>
-				<!--<input type="text" placeholder="cambiar el default transporter.send" class="form-control" ng-model="register.registerData.email">-->
+				<input type="email" placeholder="email@example.com" class="form-control" ng-model="registerData.email" required>
+				<!--<input type="text" placeholder="cambiar el default transporter.send" class="form-control" ng-model="registerData.email">-->
 			</div>
 
 			<!-- USERNAME INPUT -->
 			<div class="form-group">
 				<label>Username </label><span class="requiredField"> *</span>
-				<input type="text" class="form-control" ng-model="register.registerData.username" required>
+				<input type="text" class="form-control" ng-model="registerData.username" required>
 			</div>
 
 			<!-- PASSWORD INPUT -->
 			<div class="form-group">
 				<label>Password </label><span class="requiredField"> *</span>
-				<input type="password" class="form-control" ng-model="register.registerData.password" required>
+				<input type="password" class="form-control" ng-model="registerData.password" required>
 			</div>
 
 			<!-- REGISTER BUTTON -->
-			<div class="alert alert-danger" ng-if="register.error">
-				{{ register.error }}
+			<div class="alert alert-danger" ng-if="error">
+				{{ error }}
 			</div>
 			<button type="submit" class="btn btn-block btn-primary">
-				<span ng-if="!register.processing">Register</span>
-				<span ng-if="register.processing" class="spinner"><span class="glyphicon glyphicon-repeat"></span></span>
+				<span ng-if="!processing">Register</span>
+				<span ng-if="processing" class="spinner"><span class="glyphicon glyphicon-repeat"></span></span>
 			</button>
 
 		</form>

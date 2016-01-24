@@ -1,10 +1,10 @@
 angular.module('verifyCtrl', [])
-	.controller('verifyController', ['$window', '$routeParams', 'Auth', 'User', function($window, $routeParams, Auth, User) {
+	.controller('verifyController', ['$scope', '$window', '$routeParams', 'Auth', 'User',
+	function($scope, $window, $routeParams, Auth, User) {
 
-		var vm = this,
-			username = $routeParams.username;
+		var username = $routeParams.username;
 
-		vm.verifyed = false;
+		$scope.verifyed = false;
 
 		(function verifyUser() {
 			User.getByUsername(username).success(function(user) {
@@ -13,7 +13,7 @@ angular.module('verifyCtrl', [])
 					//No se puede verificar el user
 				} else {
 					console.log(user);
-					vm.verifyed = true;
+					$scope.verifyed = true;
 				}
 			});
 		})();

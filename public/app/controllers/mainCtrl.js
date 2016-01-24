@@ -1,107 +1,111 @@
 angular.module('mainCtrl', [])
-	.controller('mainController', ['$rootScope', '$location', '$window', 'Auth', 'User', 'socket', function($rootScope, $location, $window, Auth, User, socket) {
-		var vm = this;
+	.controller('mainController', ['$scope', '$rootScope', '$location', '$window', 'Auth', 'User', 'socket',
+	function($scope, $rootScope, $location, $window, Auth, User, socket) {
 
 		// get info if a person is logged in
-		vm.loggedIn = Auth.isLoggedIn();		
+		$scope.loggedIn = Auth.isLoggedIn();
 		
 		// check to see if a user is logged in on every request
 		$rootScope.$on('$routeChangeStart', function() {
-			vm.loggedIn = Auth.isLoggedIn();
+			$scope.loggedIn = Auth.isLoggedIn();
 
-			if(vm.loggedIn){
-				vm.username = $window.sessionStorage.getItem('username');
+			if($scope.loggedIn){
+				$scope.username = $window.sessionStorage.getItem('username');
 				if($location.path() === '/')
 					$location.path('/users');
 			}
 		});
 
-		vm.goToLogin = function() {
+		$scope.goToDashboards = function() {
+			$location.path('/dashboards');
+		};
+
+		$scope.goToLogin = function() {
 			$location.path('/login');
 		};
 
-		vm.doLogin = function() {
-			vm.processing = true;
+		$scope.doLogin = function() {
+			$scope.processing = true;
 			// clear the error
-			vm.error = '';
-			login(vm.loginData.username, vm.loginData.password);
+			$scope.error = '';
+			login($scope.loginData.username, $scope.loginData.password);
 		};
 
 
 
 		function login(username, password) {
 			Auth.login(username, password).success(function(data) {
-				vm.processing = false;
+				$scope.processing = false;
 				// if a user successfully logs in, redirect to users page
 				if (data.success) {
 					$window.sessionStorage.setItem('username', username);
-					vm.isLoggedIn = true;
+					$scope.isLoggedIn = true;
 					$location.path('/users');
 				} else
-					vm.error = data.message;
+					$scope.error = data.message;
 			});
 		};
 
 
 		// function to handle logging out
-		vm.doLogout = function() {
+		$scope.doLogout = function() {
 			Auth.logout();
 			// reset all user info
-			vm.user = {};
+			$scope.user = {};
 			$window.sessionStorage.removeItem('username');
 			$location.path('/login');
 		};
 
 
-		vm.doRegister = function() {
-			vm.processing = true;
-			vm.error = '';
+		$scope.doRegister = function() {
+			$scope.processing = true;
+			$scope.error = '';
 
-			Auth.register(vm.registerData.email, vm.registerData.username, vm.registerData.password).success(function(data) {
-				vm.processing = false;
+			Auth.register($scope.registerData.email, $scope.registerData.username, $scope.registerData.password).success(function(data) {
+				$scope.processing = false;
 				// if a user successfully logs in, redirect to users page
 				if (data.success !== false) {
-					login(vm.registerData.username, vm.registerData.password);
+					login($scope.registerData.username, $scope.registerData.password);
 				} else {
-					vm.error = data.message;
+					$scope.error = data.message;
 				}
 			});
 		};
 
 
-		vm.sendRegister = function() {
+		$scope.sendRegister = function() {
 			var userData = {
-		            email: vm.registerData.email,
+		            email: $scope.registerData.email,
 					//email: 'nicovilllalonga90@gmail.com',
-					username: vm.registerData.username,
-					password: vm.registerData.password
+					username: $scope.registerData.username,
+					password: $scope.registerData.password
 				};
 
-			vm.error = '';
-			vm.processing = true;
+			$scope.error = '';
+			$scope.processing = true;
 			/**TODO: refactor function in a service (same logic in usercreateCtrl)*/
 			User.create(userData).success(function(data) {
 				console.log(data);				
 				if(data.success === false) {
-					//vm.error = data.message;
-					vm.processing = false;
-					vm.error = data.message;
+					//$scope.error = data.message;
+					$scope.processing = false;
+					$scope.error = data.message;
 				} else {
-					Auth.sendRegister(vm.registerData.email, vm.registerData.username).success(function(data) {
+					Auth.sendRegister($scope.registerData.email, $scope.registerData.username).success(function(data) {
 						console.log('socket: ' + data);	
 						socket.emit('user:new', {
 							user:   {
-							            email: vm.registerData.email,										
-										username: vm.registerData.username,
-										password: vm.registerData.password
+							            email: $scope.registerData.email,										
+										username: $scope.registerData.username,
+										password: $scope.registerData.password
 									}
 						});					
-						vm.processing = false;
+						$scope.processing = false;
 						$location.path('/sendRegister');
 					})
 					.error(function(data){
-						vm.processing = false;
-						vm.error = data.message;
+						$scope.processing = false;
+						$scope.error = data.message;
 					});
 				}
 			});
