@@ -12,7 +12,13 @@ angular.module('dashboardCtrl', [])
 						"tasks" : [
 							{
 								"id" : 1,
+								"index": 0,
 								"text" : "task 1"
+							},
+							{
+								"id" : 9,
+								"index": 1,
+								"text" : "task 9"
 							}
 						]
 					},
@@ -21,6 +27,7 @@ angular.module('dashboardCtrl', [])
 						"tasks" : [
 							{
 								"id" : 2,
+								"index": 0,
 								"text" : "task 2"
 							}
 						]
@@ -65,4 +72,35 @@ angular.module('dashboardCtrl', [])
 		$scope.removeDash = function(index) {
 			$scope.dashboards.splice(index, 1);
 		};
+
+		window.onload = function() {
+			var lists = $scope.dashboards[0].lists;
+			var el;
+			lists.forEach(function(list) {
+				el = document.getElementById(list.name);
+				Sortable.create(el, {
+					group: 'sort-list',
+					animation: 100,
+					onSort: handleSorting,
+					onMove: handleMoving,
+					setData: _setData
+				});
+			});
+		};
+
+		function handleSorting(evt) {
+			console.log('handleSorting');
+			console.log(evt);
+		};
+
+		function handleMoving(evt) {
+			console.log('handleMoving');
+		};
+
+		function _setData(dataTransfer, dragEl) {
+			console.log(dataTransfer);
+			console.log(dragEl);
+        	dataTransfer.setData('index', dragEl.textContent);
+			console.log(dataTransfer);
+    	};
 	}]);

@@ -3,7 +3,7 @@
 	<div class="dashboards-created">
 
 		<div ng-repeat="dash in dashboards">
-			<div card-dashboard text="{{ ::dash.text }}" remove="removeDash($index)" select="selectDashboard($index)"></div>
+			<div card-dashboard text="{{dash.text}}" remove="removeDash($index)" select="selectDashboard($index)"></div>
 		</div>
 	</div>
 
