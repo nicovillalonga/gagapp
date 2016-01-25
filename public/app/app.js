@@ -4,9 +4,11 @@ angular.module('gapp', [
 	'mainCtrl',
 	'userCtrl',
 	'verifyCtrl',
+	'dashboardsCtrl',
 	'dashboardCtrl',
 	'cardDash',
 	'cardTask',
+	'dashboardsService',
 	'authService',
 	'userService',
 	'socketService'

@@ -53,10 +53,10 @@ angular.module('app.routes', ['ngRoute'])
 
 		.when('/dashboards', {
 			templateUrl: 'app/views/pages/dashboards/all.html',
-			controller: 'dashController'
+			controller: 'allDashController'
 		})
 
-		.when('/dashboards/:dashboard', {
+		.when('/dashboard/:dashboard', {
 			templateUrl: 'app/views/pages/dashboards/single.html',
 			controller: 'dashController'
 		})
