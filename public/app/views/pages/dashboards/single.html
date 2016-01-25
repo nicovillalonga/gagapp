@@ -1,27 +1,22 @@
 <div class="container">
 	<!--left view to display lists-->
-	<div class="col-sm-8">
-		<!--repeat through the lists if any-->
-		<div>
-			<div ng-repeat="list in lists">
-				<div class="list col-sm-3" style="float: left; border: 1px solid #dddddd;">
-					{{ list.name }}
-					<!--repeat through tasks inside every list-->
-					<div ng-repeat="task in list.tasks">
-						<div card-task text="{{ task.text }}"></div>
-					</div>
+	<div id="sortable-lists" class="col-sm-10">
+		<!--repeat through the lists-->
+		<div ng-repeat="list in lists">
+			<div class="col-sm-3" style="float: left; border: 1px solid #dddddd; margin-right: 10px;">
+				<div class="list-header" style="border-bottom: 1px solid #dddddd; margin-bottom: 8px;">
+					{{::list.name}}
 				</div>
+				<ul class="list-content" id="{{::list.name}}" style="min-height: 25px; list-style: none; margin-left: -40px;">
+					<!--repeat through tasks inside every list-->
+					<li class="sort-list" ng-sortable ng-repeat="task in list.tasks" style="margin-bottom: 5px; cursor: move;" card-task text="{{task.text}}"></li>
+				</ul>
 			</div>
-		</div>
-
-		<!--input for adding a new list-->
-		<div>
-			
 		</div>
 	</div>
 
 	<!--right vew to display log-->
-	<div>
+	<div class="col-sm-2">
 		
 	</div>
 </div>

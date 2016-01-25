@@ -1,68 +1,34 @@
 angular.module('dashboardCtrl', [])
-	.controller('dashController', ['$scope', '$location', '$routeParams',
-	function($scope, $location, $routeParams) {
+	.controller('dashController', ['$scope', '$routeParams', 'Dashboards', '$timeout',
+	function($scope, $routeParams, Dashboards, $timeout) {
 
-		$scope.dashboards = [
-			{
-				"id" : 1,
-				"text" : "dashboard 1",
-				"lists" : [
-					{
-						"name" : "Todo",
-						"tasks" : [
-							{
-								"id" : 1,
-								"text" : "task 1"
-							}
-						]
-					},
-					{
-						"name" : "Progress",
-						"tasks" : [
-							{
-								"id" : 2,
-								"text" : "task 2"
-							}
-						]
-					},
-					{
-						"name" : "Done",
-						"tasks" : []
-					}
-				]
-			},
-			{
-				"id" : 2,
-				"text" : "dashboard 2",
-				"lists" : [
-					{
-						"name" : "Todo",
-						"tasks" : [
-							{
-								"id" : 3,
-								"text" : "task 3"
-							}
-						]
-					}
-				]
-			},
-			{
-				"id" : 3,
-				"text" : "dashboard 3",
-				"lists" : []
-			}
-		];
+		$scope.lists = Dashboards.getDashboard(0).lists;
 
-		if($routeParams.dashboard) {
-			$scope.lists = $scope.dashboards[$routeParams.dashboard-1].lists;
-		}
+		//need $timeout so dom finish renders before trying to getElementById
+		$timeout(function() {
+			var lists = $scope.lists;
+			var el;
+			//get the lists of the model and make them sortable
+			lists.forEach(function(list) {
+				el = document.getElementById(list.name);
+				Sortable.create(el, {
+					group: 'sort-list',
+					animation: 100,
+					setData: _setData,
+					onSort: handleSorting
+				});
+			});
+		});
 
-		$scope.selectDashboard = function(index) {
-			var id = $scope.dashboards[index].id;
-			$location.path('/dashboards/' + id);
+		function handleSorting(evt) {
+			console.log('handleSorting');
+			console.log(evt);
 		};
 
-		$scope.removeDash = function(index) {
-			$scope.dashboards.splice(index, 1);
-		};
+		function _setData(dataTransfer, dragEl) {
+			console.log(dataTransfer);
+        	dataTransfer.setData('index', dragEl.textContent);
+			console.log(dataTransfer);
+    	};
+
 	}]);

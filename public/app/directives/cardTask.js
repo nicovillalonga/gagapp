@@ -2,7 +2,7 @@
 angular.module('cardTask', [])
 .directive('cardTask', function() {
 	return {
-		//restrict: 'A',
+		restrict: 'A',
 		scope: {
 			text: '@'
 		},
