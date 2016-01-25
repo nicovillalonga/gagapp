@@ -7,12 +7,10 @@
 				<div class="list-header" style="border-bottom: 1px solid #dddddd; margin-bottom: 8px;">
 					{{::list.name}}
 				</div>
-				<div class="list-content" id="{{::list.name}}" style="min-height: 25px;">
+				<ul class="list-content" id="{{::list.name}}" style="min-height: 25px; list-style: none; margin-left: -40px;">
 					<!--repeat through tasks inside every list-->
-					<div class="sort-list" ng-sortable ng-repeat="task in list.tasks" style="margin-bottom: 5px; cursor: move;">
-						<div card-task text="{{task.text}}"></div>
-					</div>
-				</div>
+					<li class="sort-list" ng-sortable ng-repeat="task in list.tasks" style="margin-bottom: 5px; cursor: move;" card-task text="{{task.text}}"></li>
+				</ul>
 			</div>
 		</div>
 	</div>
