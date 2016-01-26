@@ -2,7 +2,9 @@ angular.module('dashboardCtrl', [])
 	.controller('dashController', ['$scope', '$routeParams', 'Dashboards', '$timeout',
 	function($scope, $routeParams, Dashboards, $timeout) {
 
-		$scope.lists = Dashboards.getDashboard(0).lists;
+		var dashId = parseInt($routeParams.dashboard);
+
+		$scope.lists = Dashboards.getDashboard(dashId).lists;
 
 		//need $timeout so dom finish renders before trying to getElementById
 		$timeout(function() {
@@ -15,20 +17,24 @@ angular.module('dashboardCtrl', [])
 					group: 'sort-list',
 					animation: 100,
 					setData: _setData,
-					onSort: handleSorting
+					onAdd: handleAdd,
+					onUpdate: handleUpdate
 				});
 			});
 		});
 
-		function handleSorting(evt) {
-			console.log('handleSorting');
+		 function handleUpdate(evt) {
+	        Dashboards.updateIndex(evt.from.id, null, evt.oldIndex, evt.newIndex);
+	    }
+
+		function handleAdd(evt) {
+			console.log('handleAdd');
 			console.log(evt);
-		};
+
+	        Dashboards.updateIndex(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
+	    };
 
 		function _setData(dataTransfer, dragEl) {
-			console.log(dataTransfer);
         	dataTransfer.setData('index', dragEl.textContent);
-			console.log(dataTransfer);
     	};
-
 	}]);

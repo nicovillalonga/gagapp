@@ -2,7 +2,7 @@
 
 	<div class="dashboards-created">
 
-		<div ng-repeat="dash in dashboards">
+		<div ng-repeat="dash in dashboards track by dash.id">
 			<div card-dashboard text="{{dash.text}}" remove="removeDash($index)" select="selectDashboard($index)"></div>
 		</div>
 	</div>
