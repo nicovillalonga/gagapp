@@ -5,6 +5,7 @@ var http = require('http'),
 	path = require('path'),
 	express = require('express'), // call express
 	app = express(), // define our app using express
+	sassMiddleware = require('node-sass-middleware'), //sass middleware
 	server = http.createServer(app), //create a server for io
 	io = require('socket.io')(server), //define real time
 	config = require('./config'),
@@ -32,7 +33,24 @@ app.use(function(req, res, next) {
 	next();
 });
 
+// sass configuration
+var srcSass = path.join(__dirname , '/scss') ,
+    destCss = path.join(__dirname , '/public/assets/css');
 
+console.log(srcSass);
+console.log(destCss);
+
+app.use(
+	sassMiddleware({
+	    /* Options */
+	    src: srcSass,
+	    dest: destCss,
+	    debug: true,
+	    outputStyle: 'expanded',
+	    prefix: '/assets/css'
+	    //indentedSyntax: true,
+	})
+);
 
 // log all requests to the console
 app.use(morgan('dev'));

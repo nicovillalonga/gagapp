@@ -10,6 +10,8 @@
     "jsonwebtoken": "^5.0.0",
     "mongoose": "~3.8.19",
     "morgan": "~1.5.0",
+    "node-sass": "^3.4.2",
+    "node-sass-middleware": "^0.9.7",
     "nodemailer": "1.0",
     "socket.io": "^1.3.5"
   }
