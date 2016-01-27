@@ -83,14 +83,21 @@ angular.module('dashboardsService', [])
 		};
 
 		function getDashboard(id) {
-			//if($window.localStorage(''))
+			var storage = JSON.parse($window.localStorage.getItem('listsUpdated'));
 			var dashboard = dashboards.find(function(dash) {
 				return dash.id === id;
 			});
+
+			if(storage !== null) {
+				//if there is data in localStorage then retrieve and save (it was not saved before)
+				dashboard.lists = storage.lists;
+			} else {
+				//sort dashboard's lists by index
+				_sortDashboard(dashboard.lists);
+			}
 			//store actual dashboard for further use.
-			//getDashboard is first function called in dashController.
-			_sortDashboard(dashboard.lists);
 			actualDash = dashboard;
+
 			return dashboard;
 		};
 

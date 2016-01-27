@@ -15,7 +15,7 @@ angular.module('dashboardCtrl', [])
 				el = document.getElementById(list.name);
 				Sortable.create(el, {
 					group: 'sort-list',
-					animation: 100,
+					animation: 150,
 					//setData: _setData,
 					onAdd: handleAdd,
 					onUpdate: handleUpdate
@@ -33,7 +33,7 @@ angular.module('dashboardCtrl', [])
 
 	    angular.element($window).on('storage', function(evt) {
 	    	var store;
-	    	//listen for updated localStorage (when setItem)
+	    	//listen for updated localStorage (only for setItem)
 		    if (event.key === 'listsUpdated' && evt.newValue) {
 		      store = JSON.parse(evt.newValue);
 		      $scope.lists = store.lists;
