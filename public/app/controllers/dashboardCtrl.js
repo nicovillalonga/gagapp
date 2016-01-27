@@ -1,6 +1,6 @@
 angular.module('dashboardCtrl', [])
-	.controller('dashController', ['$scope', '$routeParams', 'Dashboards', '$timeout',
-	function($scope, $routeParams, Dashboards, $timeout) {
+	.controller('dashController', ['$rootScope', '$scope', '$routeParams', 'Dashboards', '$timeout', '$window',
+	function($rootScope, $scope, $routeParams, Dashboards, $timeout, $window) {
 
 		var dashId = parseInt($routeParams.dashboard);
 
@@ -16,7 +16,7 @@ angular.module('dashboardCtrl', [])
 				Sortable.create(el, {
 					group: 'sort-list',
 					animation: 100,
-					setData: _setData,
+					//setData: _setData,
 					onAdd: handleAdd,
 					onUpdate: handleUpdate
 				});
@@ -24,17 +24,25 @@ angular.module('dashboardCtrl', [])
 		});
 
 		 function handleUpdate(evt) {
-	        Dashboards.updateIndex(evt.from.id, null, evt.oldIndex, evt.newIndex);
+	        Dashboards.updateIndexes(evt.from.id, null, evt.oldIndex, evt.newIndex);
 	    }
 
 		function handleAdd(evt) {
-			console.log('handleAdd');
-			console.log(evt);
-
-	        Dashboards.updateIndex(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
+	        Dashboards.updateIndexes(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
 	    };
 
-		function _setData(dataTransfer, dragEl) {
+	    angular.element($window).on('storage', function(evt) {
+	    	var store;
+	    	//listen for updated localStorage (when setItem)
+		    if (event.key === 'listsUpdated' && evt.newValue) {
+		      store = JSON.parse(evt.newValue);
+		      $scope.lists = store.lists;
+		      Dashboards.updateActualLists(store.lists);
+		      $scope.$apply();
+		    }
+  		});
+
+		/*function _setData(dataTransfer, dragEl) {
         	dataTransfer.setData('index', dragEl.textContent);
-    	};
+    	};*/
 	}]);
