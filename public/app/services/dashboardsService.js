@@ -152,9 +152,18 @@ angular.module('dashboardsService', [])
 			actualDash.lists = lists;
 		};
 
+		function getTask(listName, taskId) {
+			return actualDash.lists.find(function(list) {
+					return list.name === listName;
+				}).tasks.find(function(task) {
+					return task.id === taskId;
+				});
+		};
+
 		return {
 			getAllDashboards: getAllDashboards,
 			getDashboard: getDashboard,
+			getTask: getTask,
 			updateIndexes: updateIndexes,
 			updateActualLists: updateActualLists
 		}
