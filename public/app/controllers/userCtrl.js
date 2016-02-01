@@ -1,8 +1,8 @@
 angular.module('userCtrl', ['userService', 'socketService'])
 
 	// controller applied to user creation page
-	.controller('userCreateController', ['$scope', 'User', 'Auth', '$location', '$window',
-	function($scope, User, Auth, $location, $window) {
+	.controller('userCreateController', ['$scope', '$location', '$window', 'User', 'Auth', 'socket',
+	function($scope, $location, $window, User, Auth, socket) {
 		
 		if (!$window.sessionStorage.getItem('token')) {
 			$location.path('/login');
@@ -28,6 +28,7 @@ angular.module('userCtrl', ['userService', 'socketService'])
 					$scope.message = 'user created! -- sending verification email to ' + $scope.userData.email;
 					Auth.sendRegister($scope.userData.email, $scope.userData.username).success(function(data) {
 						$scope.processing = false;
+						socket.emit('user:new', data);
 						$location.path('/sendRegister');
 					})
 					.error(function(data){
@@ -40,8 +41,8 @@ angular.module('userCtrl', ['userService', 'socketService'])
 	}])
 
 	// controller applied to user edit page
-	.controller('userEditController', ['$scope', '$routeParams', 'User',
-	function($scope, $routeParams, User) {
+	.controller('userEditController', ['$scope', '$routeParams', 'User', 'socket',
+	function($scope, $routeParams, User, socket) {
 
 		var userId = $routeParams.user_id;
 			
@@ -72,6 +73,7 @@ angular.module('userCtrl', ['userService', 'socketService'])
 				if (!existe || (existe && data[0]._id === userId)) {
 					User.update($routeParams.user_id, $scope.userData).success(function(data) {
 						$scope.processing = false;
+						socket.emit('user:new', data);
 						// clear the form
 						$scope.userData = {};
 						// bind the message from our API to $scope.message
