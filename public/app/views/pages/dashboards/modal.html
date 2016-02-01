@@ -1,17 +1,82 @@
 <div class="modal fade">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" style="margin-left: -150px; width: 150%;">
+      
       <div class="modal-header">
         <button type="button" class="close" ng-click="close(false)" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">Modal</h4>
+        <h2 class="modal-title">{{taskName}}</h2>
       </div>
+
       <div class="modal-body">
-        <p>{{taskText}}</p>
+      	<div class="row">
+      		<!--left modal side-->
+      		<div class="col-md-8">
+
+      			<!--task description section-->
+      			<div class="row">
+      				<div class="col-md-12">
+      					<h4>Task Description</h4>
+      				</div>
+      			
+      				<div class="col-md-12">
+      					<textarea class="description" rows="4" cols="80" style="resize: none; border-radius: 7px; padding: 5px 0 0 8px;">{{taskDescription}}</textarea>
+      				</div>
+      				<div class="col-md-12">
+      					<button type="button" ng-click="saveDescription($event)" class="btn btn-success">Save</button>
+      				</div>	
+      			</div>
+
+      			<hr>
+
+      			<!--Comments section-->
+      			<div class="row">
+		      		<div class="col-md-12">
+						<h4>Add Comment</h4>
+					</div>
+					<div class="col-md-12">
+						<textarea class="comment" rows="4" cols="80" style="resize: none; border-radius: 7px; padding: 5px 0 0 8px;"></textarea>
+					</div>
+					<div class="col-md-12">
+		      			<button type="button" ng-click="saveComment($event)" class="btn btn-success">Save</button>
+		      		</div>
+		      	</div>
+
+		      	<hr>
+
+		      	<!--Activities section-->
+		      	<div class="row">
+		      		<div class="col-md-12">
+		      			<div ng-repeat="activitie in activities track by activitie.id">
+	      					<div class="row">
+			      				<div class="col-md-6">
+			      					<h5>{{activitie.user}}</h5>
+			      				</div>
+			      				<div class="col-md-6 pull-left">
+		      						<h6>{{activitie.date}}</h6>
+			      				</div>
+			      			</div>
+			      			<div class="row">
+			      				<div class="col-md-12">
+			      					<p>{{activitie.activitie}}</p>
+			      				</div>
+	      					</div>
+		      			</div>
+		      		</div>
+		      	</div>
+		      	
+      		</div>
+
+      		<!--right modal side-->
+      		<div class="col-md-4">
+      			
+      		</div>
+      	</div>
       </div>
+
       <div class="modal-footer">
-        <button type="button" ng-click="close(false)" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" ng-click="close(true)" class="btn btn-primary" data-dismiss="modal">Ok</button>
+        <button type="button" ng-click="close(false)" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
+
     </div>
   </div>
 </div>
