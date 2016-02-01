@@ -57,8 +57,10 @@ angular.module('dashboardCtrl', [])
 			}).then(function(modal) {
 			    modal.element.modal();
 			    modal.close.then(function(result) {
-			    	
+			    	console.log(result);
 			    });
+			}).catch(function(error) {
+				console.log(error)
 			});
 		};
 	}]);

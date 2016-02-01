@@ -4,7 +4,7 @@ angular.module('cardTask', [])
 	return {
 		restrict: 'A',
 		scope: {
-			text: '@'
+			name: '@'
 		},
 		templateUrl: 'app/views/pages/dashboards/cardTask.html'
 	};

@@ -15,17 +15,26 @@ angular.module('dashboardsService', [])
 							{
 								"id" : 1,
 								"index": 0,
-								"text" : "task 1"
+								"name" : "task 1",
+								"description" : "el text de la story 1",
+								"comments" : [],
+								"activities" : []
 							},
 							{
 								"id" : 8,
 								"index": 2,
-								"text" : "task 8"
+								"name" : "task 8",
+								"description" : "el text de la story 8",
+								"comments" : [],
+								"activities" : []
 							},
 							{
 								"id" : 10,
 								"index": 1,
-								"text" : "task 10"
+								"name" : "task 10",
+								"description" : "el text de la story 10",
+								"comments" : [],
+								"activities" : []
 							}
 						]
 					},
@@ -36,7 +45,10 @@ angular.module('dashboardsService', [])
 							{
 								"id" : 2,
 								"index": 0,
-								"text" : "task 2"
+								"name" : "task 2",
+								"description" : "el text de la story 2",
+								"comments" : [],
+								"activities" : []
 							}
 						]
 					},
@@ -57,7 +69,10 @@ angular.module('dashboardsService', [])
 						"tasks" : [
 							{
 								"id" : 3,
-								"text" : "task 3"
+								"name" : "task 3",
+								"description" : "el text de la story 3",
+								"comments" : [],
+								"activities" : []
 							}
 						]
 					}
@@ -128,7 +143,7 @@ angular.module('dashboardsService', [])
 			}
 
 			//update the indexes of original list
-			_setListIndexes(tasks, newIndex);
+			_setListIndexes(tasks, oldIndex);
 
 			//saves the updated lists to localStorage to update other users lists
 			store.lists = actualDash.lists;
