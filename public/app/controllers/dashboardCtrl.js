@@ -1,6 +1,6 @@
 angular.module('dashboardCtrl', [])
-	.controller('dashController', ['$rootScope', '$scope', '$routeParams', 'Dashboards', '$timeout', '$window',
-	function($rootScope, $scope, $routeParams, Dashboards, $timeout, $window) {
+	.controller('dashController', ['$scope', '$routeParams', 'Dashboards', '$timeout', '$window', 'ModalService',
+	function($scope, $routeParams, Dashboards, $timeout, $window, ModalService) {
 
 		var dashId = parseInt($routeParams.dashboard);
 
@@ -45,4 +45,20 @@ angular.module('dashboardCtrl', [])
 		/*function _setData(dataTransfer, dragEl) {
         	dataTransfer.setData('index', dragEl.textContent);
     	};*/
+
+    	$scope.showModal = function(target) {
+		    ModalService.showModal({
+			    templateUrl: "app/views/pages/dashboards/modal.html",
+			    controller: "modalController",
+			    inputs: {
+			    	dashId: dashId,
+			    	target: target
+			    }
+			}).then(function(modal) {
+			    modal.element.modal();
+			    modal.close.then(function(result) {
+			    	
+			    });
+			});
+		};
 	}]);

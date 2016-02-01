@@ -1,11 +1,13 @@
 angular.module('gapp', [
 	'ngAnimate',
 	'app.routes',
+	'angularModalService',
 	'mainCtrl',
 	'userCtrl',
 	'verifyCtrl',
 	'dashboardsCtrl',
 	'dashboardCtrl',
+	'modalCtrl',
 	'cardDash',
 	'cardTask',
 	'dashboardsService',
