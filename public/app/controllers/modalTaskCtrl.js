@@ -1,8 +1,7 @@
-angular.module('modalCtrl', [])
-	.controller('modalController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'dashId', 'target', 'close',
+angular.module('modalTaskCtrl', [])
+	.controller('modalTaskController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'dashId', 'target', 'close',
 	function($scope, $routeParams, $timeout, $element, $window, Dashboards, dashId, target, close) {
 		
-		console.log(target);
 		var background;
 		var modalContent;
 		var modalContentClicked = false;
@@ -14,8 +13,6 @@ angular.module('modalCtrl', [])
 		$scope.taskName = task.name;
 		$scope.taskDescription = task.description;
 		$scope.activities = task.activities;
-		
-		console.log('sampleController');
 		
 
 		/*$timeout(function() {
@@ -65,7 +62,6 @@ angular.module('modalCtrl', [])
 
 		//remove escape key press listener when modal is closed
 		$scope.$on('$destroy', function(){
-			console.log('destroy');
 			removeEventListener('keydown', closeOnEscape);
 			close(task, 500);
 		});

@@ -1,5 +1,8 @@
 //NICO
 /*
+var mongoose = require('mongoose');
+var url = 'mongodb://localhost/mmachineExpress';
+
 module.exports = {
 	'port': process.env.PORT || 8080,
 	'database': 'mongodb://localhost/mmachineExpress',
@@ -24,7 +27,7 @@ module.exports = {
 };
 
 
-/** Conexion a MongoLab */
+// Conexion a MongoLab
 
 var user = "agusburgos";
 var password = "aprendiendo";

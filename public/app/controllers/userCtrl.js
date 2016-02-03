@@ -57,34 +57,33 @@ angular.module('userCtrl', ['userService', 'socketService'])
 
 		// function to save the user
 		$scope.saveUser = function() {
-			var existe;
+			var exists;
 			$scope.processing = true;
 			$scope.message = '';
-			/*User.get($scope.userData.username)
 
-				.success(function(data) {
-					$scope.message = 'Username already exists';
-				})
-
-				.error(function(data) {*/
-					// call the userService function to update
-			User.getByUsername($scope.userData.username).success(function (data) {
-				existe = data.length > 0 ? true : false;
-				if (!existe || (existe && data[0]._id === userId)) {
-					User.update($routeParams.user_id, $scope.userData).success(function(data) {
+			User.getByUsername($scope.userData.username)
+			.success(function (data) {
+				exists = data.length > 0;
+				if (!exists || (exists && data[0]._id === userId)) {
+					User.update($routeParams.user_id, $scope.userData)
+					.success(function(data) {
 						$scope.processing = false;
 						socket.emit('user:new', data);
 						// clear the form
 						$scope.userData = {};
 						// bind the message from our API to $scope.message
 						$scope.message = data.message;
+					})
+					.error(function(err) {
+						$scope.message = 'Error while updating user';
 					});
-					//});
 				} else {
 					$scope.message = 'Username already in use';
 				}				
+			})
+			.error(function(err) {
+				$scope.message = 'Error while getting user';
 			});
-
 		};
 	}])
 

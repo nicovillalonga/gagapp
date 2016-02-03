@@ -16,7 +16,6 @@ angular.module('dashboardCtrl', [])
 				Sortable.create(el, {
 					group: 'sort-list',
 					animation: 150,
-					//setData: _setData,
 					onAdd: handleAdd,
 					onUpdate: handleUpdate
 				});
@@ -42,14 +41,10 @@ angular.module('dashboardCtrl', [])
 		    }
   		});
 
-		/*function _setData(dataTransfer, dragEl) {
-        	dataTransfer.setData('index', dragEl.textContent);
-    	};*/
-
     	$scope.showModal = function(target) {
 		    ModalService.showModal({
-			    templateUrl: "app/views/pages/dashboards/modal.html",
-			    controller: "modalController",
+			    templateUrl: "app/views/pages/dashboards/modalTask.html",
+			    controller: "modalTaskController",
 			    inputs: {
 			    	dashId: dashId,
 			    	target: target
