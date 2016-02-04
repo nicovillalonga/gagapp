@@ -44,7 +44,7 @@ angular.module('dashboardCtrl', [])
     	$scope.showModal = function(target) {
 		    ModalService.showModal({
 			    templateUrl: "app/views/pages/dashboards/modalTask.html",
-			    controller: "modalTaskController",
+			    controller: "modalController",
 			    inputs: {
 			    	dashId: dashId,
 			    	target: target

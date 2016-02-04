@@ -20,11 +20,15 @@ angular.module('dashboardsCtrl', [])
 		$scope.modalDashboard = function() {
 		    ModalService.showModal({
 			    templateUrl: "app/views/pages/dashboards/modalDashboard.html",
-			    controller: "modalDashController"
+			    controller: "modalController",
+			    inputs: {
+			    	dashId: null,
+			    	target: null
+			    }
 			}).then(function(modal) {
 			    modal.element.modal();
 			    modal.close.then(function(result) {
-			    	console.log(result);
+
 			    });
 			}).catch(function(error) {
 				console.log(error)
