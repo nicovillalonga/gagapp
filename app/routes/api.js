@@ -412,7 +412,7 @@ module.exports = function(app, express) {
 			dashboard.actualSprint = 1;
 			dashboard.lists = createLists();
 			
-			// save the user and check for errors
+			// save the dashboard and check for errors
 			dashboard.save(function(err) {
 				if (err) {
 					// duplicate entry
@@ -424,7 +424,26 @@ module.exports = function(app, express) {
 
 				res.json({ message: 'Dashboard created!.. name: ' + dashboard.name});
 			});
+		})
+		.get(function(req, res) {
+			Dashboard.find(function(err, dashboards) {
+				if (err) res.send(err);
+				// return the dashboards				
+				res.json(dashboards);
+			});
 		});
+
+	
+
+
+	apiRouter.route('/dashboard/:_id')
+		.get(function(req, res) {
+			Dashboard.findById(req.params._id, function(err, dashboard) {
+				if (err) res.send(err);
+					// return that dashboard
+					res.json(dashboard);
+			});
+		})
 
 
 

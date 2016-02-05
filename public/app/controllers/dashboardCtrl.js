@@ -1,10 +1,14 @@
 angular.module('dashboardCtrl', [])
-	.controller('dashController', ['$scope', '$routeParams', 'Dashboards', '$timeout', '$window', 'ModalService',
-	function($scope, $routeParams, Dashboards, $timeout, $window, ModalService) {
+	.controller('dashController', ['$scope', '$routeParams', '$timeout', '$window', 'Dashboards', 'ModalService',
+	function($scope, $routeParams, $timeout, $window, Dashboards, ModalService) {
 
-		var dashId = parseInt($routeParams.dashboard);
+		var dashId = $routeParams.dashboard;
 
-		$scope.lists = Dashboards.getDashboard(dashId).lists;
+		Dashboards.getDashboard(dashId).success(function(dash) {
+			$scope.lists = dash.lists;
+		}).error(function(err) {
+			console.log('Error on loading Dashboard ' + dashId, err);
+		})
 
 		//need $timeout so dom finish renders before trying to getElementById
 		$timeout(function() {
@@ -20,7 +24,7 @@ angular.module('dashboardCtrl', [])
 					onUpdate: handleUpdate
 				});
 			});
-		});
+		}, 2000);
 
 		 function handleUpdate(evt) {
 	        Dashboards.updateIndexes(evt.from.id, null, evt.oldIndex, evt.newIndex);

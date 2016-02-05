@@ -86,7 +86,8 @@ angular.module('dashboardsService', [])
 		];
 
 		function getAllDashboards() {
-			return dashboards;
+			//return dashboards;			
+			return $http.get('/api/dashboards');
 		};
 
 		function _sortDashboard(lists) {
@@ -99,9 +100,10 @@ angular.module('dashboardsService', [])
 
 		function getDashboard(id) {
 			var storage = JSON.parse($window.localStorage.getItem('listsUpdated'));
-			var dashboard = dashboards.find(function(dash) {
-				return dash.id === id;
-			});
+			
+			return $http.get('/api/dashboard/' + id);
+
+			/* NEED MIGRATION
 
 			if(storage !== null && storage.dashboard === id) {
 				//if there is data in localStorage then retrieve and save (it was not saved before)
@@ -114,6 +116,8 @@ angular.module('dashboardsService', [])
 			actualDash = dashboard;
 
 			return dashboard;
+
+			*/
 		};
 
 		function createDashboard(text, owner) {
@@ -123,7 +127,7 @@ angular.module('dashboardsService', [])
 		function updateIndexes(listName, listNameTarget, oldIndex, newIndex) {
 			var tasksTarget;
 			var store = {
-				"dashboard" : actualDash.id
+				"dashboard" : actualDash._id
 			};
 			var list = actualDash.lists.slice().find(function(list) {
 				return list.name === listName;

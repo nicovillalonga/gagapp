@@ -2,7 +2,7 @@
 
 	<div class="row dashboards-created" style="background-color: #F3F3F3; overflow: auto; border-radius: 7px;">
 
-		<div ng-repeat="dash in dashboards track by dash.id">
+		<div ng-repeat="dash in dashboards track by dash._id">
 			<div card-dashboard text="{{dash.text}}" remove="removeDash($index)" select="selectDashboard($index)"></div>
 		</div>
 	</div>
