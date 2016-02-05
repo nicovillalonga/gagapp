@@ -1,4 +1,6 @@
 var User = require('../models/user'),
+	List = require('../models/list'),
+	Dashboard = require('../models/dashboard'),
 	jwt = require('jsonwebtoken'),    
 	config = require('../../config'),
 	//directTransport = require('nodemailer-direct-transport'),
@@ -20,7 +22,35 @@ var User = require('../models/user'),
 	    }
 	});
 
+function createList(id) {
+	var list = new List();
+
+	list.id = id;
 	
+	switch(id) {
+	    case 1:
+	        list.name = 'Todo';
+	        break;
+	    case 2:
+	        list.name = 'Progress';
+	        break;
+	    case 3:
+	    	list.name = 'Done';
+	        break;
+	}
+
+	return list;
+}
+
+function createLists() {
+	var lists = [];
+	
+	for (var id = 1; id < 4; id++) {
+		lists.push(createList(id));
+	}
+
+	return lists;
+}	
 
 module.exports = function(app, express) {
 
@@ -81,11 +111,6 @@ module.exports = function(app, express) {
 
 
 
-
-
-
-
-	
 	// route middleware to verify a token excepting register
 	apiRouter.use('/', function(req, res, next) {
 		//var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
@@ -127,9 +152,6 @@ module.exports = function(app, express) {
 			}
 		}
 	});
-
-
-
 
 
 
@@ -326,6 +348,7 @@ module.exports = function(app, express) {
 
 
 
+
 	// on routes that end in /users/:user_id
 	apiRouter.route('/users/:user_id')
 		// get the user with that id
@@ -377,6 +400,33 @@ module.exports = function(app, express) {
 
 
 
+	apiRouter.route('/dashboards')
+		.post(function(req, res) {
+			// create a new instance of the Dashboard model
+			var dashboard = new Dashboard();
+			
+			// set the dashboard information (comes from the request)
+			dashboard.id = 1;
+			dashboard.text = req.body.text;
+			dashboard.owner = req.body.owner;
+			dashboard.actualSprint = 1;
+			dashboard.lists = createLists();
+			
+			// save the user and check for errors
+			dashboard.save(function(err) {
+				if (err) {
+					// duplicate entry
+					if (err.code === 11000)
+						return res.json({ success: false, message: 'A dashboard with that name already exists. '});
+					else
+						return res.send(err);
+				}
+
+				res.json({ message: 'Dashboard created!.. name: ' + dashboard.name});
+			});
+		});
+
+
 
 	/*
 	apiRouter.route('/register')
@@ -384,9 +434,6 @@ module.exports = function(app, express) {
 
 		});
 	*/
-
-
-
 
 		
 	return apiRouter;

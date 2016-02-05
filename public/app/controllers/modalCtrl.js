@@ -52,7 +52,9 @@ angular.module('modalCtrl', [])
 		});*/
 
 		$scope.createDashboard = function() {
-			Dashboards.createDashboard($scope.dashName);
+			var user = $window.sessionStorage.getItem('username');
+
+			Dashboards.createDashboard($scope.dashName, user);
 			$scope.close();
 		};
 

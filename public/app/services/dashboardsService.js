@@ -1,6 +1,6 @@
 angular.module('dashboardsService', [])
-	.factory('Dashboards', ['$window',
-	function($window) {
+	.factory('Dashboards', ['$http', '$window',
+	function($http, $window) {
 
 		var actualDash;
 		var dashboards = [
@@ -116,15 +116,8 @@ angular.module('dashboardsService', [])
 			return dashboard;
 		};
 
-		function createDashboard(text) {
-			var lastId = dashboards[dashboards.length - 1].id;
-			var newDash = {
-				"id": lastId + 1,
-				"text": text,
-				"lists": []
-			};
-
-			dashboards.push(newDash);
+		function createDashboard(text, owner) {
+			return $http.post('/api/dashboards', {"text": text, "owner": owner});			
 		};
 
 		function updateIndexes(listName, listNameTarget, oldIndex, newIndex) {
