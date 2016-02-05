@@ -1,11 +1,19 @@
 <div class="container">
 
-	<div class="dashboards-created">
+	<div class="row dashboards-created" style="background-color: #F3F3F3; overflow: auto; border-radius: 7px;">
 
 		<div ng-repeat="dash in dashboards track by dash.id">
 			<div card-dashboard text="{{dash.text}}" remove="removeDash($index)" select="selectDashboard($index)"></div>
 		</div>
 	</div>
 
-	<div class="dashboards-participating"></div>
+	<div class="row">
+		<div class="col-sm-4 col-md-3" >
+			<div ng-click="modalDashboard()" style="border: 1px solid #dddddd; border-radius: 7px; background-color: white; margin: 40px 0 40px 0; padding: 12%; background-color: #337AB7; color: white; cursor: pointer;">
+				Create Dashboard..
+			</div>
+		</div>
+	</div>
+
+	<div class="dashboards-participating" style="background-color: #F3F3F3; overflow: auto; border-radius: 7px;"></div>
 </div>

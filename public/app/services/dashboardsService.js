@@ -103,7 +103,7 @@ angular.module('dashboardsService', [])
 				return dash.id === id;
 			});
 
-			if(storage !== null) {
+			if(storage !== null && storage.dashboard === id) {
 				//if there is data in localStorage then retrieve and save (it was not saved before)
 				dashboard.lists = storage.lists;
 			} else {
@@ -114,6 +114,17 @@ angular.module('dashboardsService', [])
 			actualDash = dashboard;
 
 			return dashboard;
+		};
+
+		function createDashboard(text) {
+			var lastId = dashboards[dashboards.length - 1].id;
+			var newDash = {
+				"id": lastId + 1,
+				"text": text,
+				"lists": []
+			};
+
+			dashboards.push(newDash);
 		};
 
 		function updateIndexes(listName, listNameTarget, oldIndex, newIndex) {
@@ -176,6 +187,7 @@ angular.module('dashboardsService', [])
 		};
 
 		return {
+			createDashboard: createDashboard,
 			getAllDashboards: getAllDashboards,
 			getDashboard: getDashboard,
 			getTask: getTask,

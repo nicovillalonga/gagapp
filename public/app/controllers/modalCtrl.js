@@ -2,20 +2,23 @@ angular.module('modalCtrl', [])
 	.controller('modalController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'dashId', 'target', 'close',
 	function($scope, $routeParams, $timeout, $element, $window, Dashboards, dashId, target, close) {
 		
-		console.log(target);
 		var background;
 		var modalContent;
 		var modalContentClicked = false;
-		var taskId = parseInt(target.currentTarget.id);
-		var listName = target.currentTarget.parentNode.id;
-		var task = Dashboards.getTask(listName, taskId);
+		var taskId; 
+		var listName;
+		var task;
 		var editedTask = {};
 
-		$scope.taskName = task.name;
-		$scope.taskDescription = task.description;
-		$scope.activities = task.activities;
-		
-		console.log('sampleController');
+		if(dashId && target) {
+			taskId = parseInt(target.currentTarget.id);
+			listName = target.currentTarget.parentNode.id;
+			task = Dashboards.getTask(listName, taskId);
+
+			$scope.taskName = task.name;
+			$scope.taskDescription = task.description;
+			$scope.activities = task.activities;
+		}
 		
 
 		/*$timeout(function() {
@@ -48,7 +51,13 @@ angular.module('modalCtrl', [])
 			};
 		});*/
 
+		$scope.createDashboard = function() {
+			Dashboards.createDashboard($scope.dashName);
+			$scope.close();
+		};
+
 		$scope.close = function(result) {
+			$element.modal('hide');
 	 		$scope.$destroy();
 		};
 
@@ -58,14 +67,12 @@ angular.module('modalCtrl', [])
 		function closeOnEscape(e) {
 			var ev = e.keyCode || e.which;
 			if(ev === 27){
-				$element.modal('hide');
-				$scope.$destroy();
+				$scope.close();
 			}
 		};
 
 		//remove escape key press listener when modal is closed
 		$scope.$on('$destroy', function(){
-			console.log('destroy');
 			removeEventListener('keydown', closeOnEscape);
 			close(task, 500);
 		});
