@@ -32,7 +32,10 @@ angular.module('dashboardsCtrl', [])
 			}).then(function(modal) {
 			    modal.element.modal();
 			    modal.close.then(function(result) {
-
+			    	Dashboards.getAllDashboards()
+			    	.success(function(data) {
+			    		$scope.dashboards = data;
+			    	});
 			    });
 			}).catch(function(error) {
 				console.log(error)

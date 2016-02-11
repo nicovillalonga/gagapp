@@ -22,35 +22,22 @@ var User = require('../models/user'),
 	    }
 	});
 
-function createList(id) {
-	var list = new List();
+	function createLists() {
+		var listNames = ['Todo', 'Progress', 'Done'];
+		var i,
+			length = listNames.length;
+		var list,
+			lists = [];
 
-	list.id = id;
-	
-	switch(id) {
-	    case 1:
-	        list.name = 'Todo';
-	        break;
-	    case 2:
-	        list.name = 'Progress';
-	        break;
-	    case 3:
-	    	list.name = 'Done';
-	        break;
-	}
+		for (i = 0; i < length; i++) {
+			list = new List();
+			list.id = i;
+			list.name = listNames[i];
+			lists.push(list);
+		}
 
-	return list;
-}
-
-function createLists() {
-	var lists = [];
-	
-	for (var id = 1; id < 4; id++) {
-		lists.push(createList(id));
-	}
-
-	return lists;
-}	
+		return lists;
+	};
 
 module.exports = function(app, express) {
 
