@@ -85,9 +85,13 @@ angular.module('dashboardsService', [])
 			}
 		];
 
-		function getAllDashboards() {
+		function getAllDashboards(owner) {
 			//return dashboards;			
-			return $http.get('/api/dashboards');
+			return $http.get('/api/dashboards/' + owner);
+		};
+
+		function remove(_id) {			
+			return $http.delete('/api/dashboard/' + _id );
 		};
 
 		function _sortDashboard(lists) {
@@ -186,6 +190,7 @@ angular.module('dashboardsService', [])
 		return {
 			createDashboard: createDashboard,
 			getAllDashboards: getAllDashboards,
+			remove: remove,
 			getDashboard: getDashboard,
 			getTask: getTask,
 			updateIndexes: updateIndexes,

@@ -424,16 +424,22 @@ module.exports = function(app, express) {
 
 				res.json({ message: 'Dashboard created!.. name: ' + dashboard.name});
 			});
-		})
+		});	
+
+
+
+
+	apiRouter.route('/dashboards/:owner')
 		.get(function(req, res) {
-			Dashboard.find(function(err, dashboards) {
-				if (err) res.send(err);
-				// return the dashboards				
-				res.json(dashboards);
+			Dashboard.find({ $or: [{owner: req.params.owner}, {participants: {username: req.params.owner}} ]}, 
+				function(err, dashboards) {
+					if (err) res.send(err);
+					// return the dashboards				
+					res.json(dashboards);
 			});
 		});
 
-	
+		
 
 
 	apiRouter.route('/dashboard/:_id')
@@ -444,6 +450,12 @@ module.exports = function(app, express) {
 					res.json(dashboard);
 			});
 		})
+		.delete(function(req, res) {
+			Dashboard.remove({ _id: req.params._id }, function(err, user) {
+				if (err) return res.send(err);
+				res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
+			});
+		});
 
 
 
