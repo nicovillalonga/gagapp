@@ -6,6 +6,7 @@ angular.module('dashboardCtrl', [])
 
 		Dashboards.getDashboard(dashId).success(function(dash) {
 			$scope.lists = dash.lists;
+			Dashboards.setActualDashboard(dash);
 		}).error(function(err) {
 			console.log('Error on loading Dashboard ' + dashId, err);
 		})
@@ -33,17 +34,6 @@ angular.module('dashboardCtrl', [])
 		function handleAdd(evt) {
 	        Dashboards.updateIndexes(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
 	    };
-
-	    angular.element($window).on('storage', function(evt) {
-	    	var store;
-	    	//listen for updated localStorage (only for setItem)
-		    if (event.key === 'listsUpdated' && evt.newValue) {
-		      store = JSON.parse(evt.newValue);
-		      $scope.lists = store.lists;
-		      Dashboards.updateActualLists(store.lists);
-		      $scope.$apply();
-		    }
-  		});
 
     	$scope.showModal = function(target) {
 		    ModalService.showModal({
