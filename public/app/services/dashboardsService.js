@@ -5,11 +5,10 @@ angular.module('dashboardsService', [])
 		var actualDash;
 
 		function getAllDashboards(owner) {
-			//return dashboards;			
 			return $http.get('/api/dashboards/' + owner);
 		};
 
-		function remove(_id) {			
+		function remove(_id) {
 			return $http.delete('/api/dashboard/' + _id );
 		};
 
