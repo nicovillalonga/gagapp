@@ -37,9 +37,6 @@ app.use(function(req, res, next) {
 var srcSass = path.join(__dirname , '/scss') ,
     destCss = path.join(__dirname , '/public/assets/css');
 
-console.log(srcSass);
-console.log(destCss);
-
 app.use(
 	sassMiddleware({
 	    /* Options */

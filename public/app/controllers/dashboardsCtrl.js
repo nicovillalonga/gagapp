@@ -6,10 +6,14 @@ angular.module('dashboardsCtrl', [])
 			$window.localStorage.removeItem('listsUpdated');
 		}
 
-		$scope.dashboards = Dashboards.getAllDashboards();
+		Dashboards.getAllDashboards().success(function(dashboards) {
+			$scope.dashboards = dashboards;
+		}).error(function(err) {
+			console.log('Error on loading dashboards', err);
+		})
 
 		$scope.selectDashboard = function(index) {
-			var id = $scope.dashboards[index].id;
+			var id = $scope.dashboards[index]._id;
 			$location.path('/dashboard/' + id);
 		};
 
@@ -28,7 +32,10 @@ angular.module('dashboardsCtrl', [])
 			}).then(function(modal) {
 			    modal.element.modal();
 			    modal.close.then(function(result) {
-
+			    	Dashboards.getAllDashboards()
+			    	.success(function(data) {
+			    		$scope.dashboards = data;
+			    	});
 			    });
 			}).catch(function(error) {
 				console.log(error)

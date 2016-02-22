@@ -1,4 +1,6 @@
 var User = require('../models/user'),
+	List = require('../models/list'),
+	Dashboard = require('../models/dashboard'),
 	jwt = require('jsonwebtoken'),    
 	config = require('../../config'),
 	//directTransport = require('nodemailer-direct-transport'),
@@ -20,7 +22,22 @@ var User = require('../models/user'),
 	    }
 	});
 
-	
+	function createLists() {
+		var listNames = ['Todo', 'Progress', 'Done'];
+		var i,
+			length = listNames.length;
+		var list,
+			lists = [];
+
+		for (i = 0; i < length; i++) {
+			list = new List();
+			list.id = i;
+			list.name = listNames[i];
+			lists.push(list);
+		}
+
+		return lists;
+	};
 
 module.exports = function(app, express) {
 
@@ -81,11 +98,6 @@ module.exports = function(app, express) {
 
 
 
-
-
-
-
-	
 	// route middleware to verify a token excepting register
 	apiRouter.use('/', function(req, res, next) {
 		//var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
@@ -127,9 +139,6 @@ module.exports = function(app, express) {
 			}
 		}
 	});
-
-
-
 
 
 
@@ -326,6 +335,7 @@ module.exports = function(app, express) {
 
 
 
+
 	// on routes that end in /users/:user_id
 	apiRouter.route('/users/:user_id')
 		// get the user with that id
@@ -377,6 +387,52 @@ module.exports = function(app, express) {
 
 
 
+	apiRouter.route('/dashboards')
+		.post(function(req, res) {
+			// create a new instance of the Dashboard model
+			var dashboard = new Dashboard();
+			
+			// set the dashboard information (comes from the request)
+			dashboard.id = 1;
+			dashboard.text = req.body.text;
+			dashboard.owner = req.body.owner;
+			dashboard.actualSprint = 1;
+			dashboard.lists = createLists();
+			
+			// save the dashboard and check for errors
+			dashboard.save(function(err) {
+				if (err) {
+					// duplicate entry
+					if (err.code === 11000)
+						return res.json({ success: false, message: 'A dashboard with that name already exists. '});
+					else
+						return res.send(err);
+				}
+
+				res.json({ message: 'Dashboard created!.. name: ' + dashboard.name});
+			});
+		})
+		.get(function(req, res) {
+			Dashboard.find(function(err, dashboards) {
+				if (err) res.send(err);
+				// return the dashboards				
+				res.json(dashboards);
+			});
+		});
+
+	
+
+
+	apiRouter.route('/dashboard/:_id')
+		.get(function(req, res) {
+			Dashboard.findById(req.params._id, function(err, dashboard) {
+				if (err) res.send(err);
+					// return that dashboard
+					res.json(dashboard);
+			});
+		})
+
+
 
 	/*
 	apiRouter.route('/register')
@@ -384,9 +440,6 @@ module.exports = function(app, express) {
 
 		});
 	*/
-
-
-
 
 		
 	return apiRouter;
