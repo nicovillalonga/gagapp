@@ -9,7 +9,7 @@ angular.module('dashboardCtrl', [])
 			Dashboards.setActualDashboard(dash);
 		}).error(function(err) {
 			console.log('Error on loading Dashboard ' + dashId, err);
-		})
+		});
 
 		//need $timeout so dom finish renders before trying to getElementById
 		$timeout(function() {
