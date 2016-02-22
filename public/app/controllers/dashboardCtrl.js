@@ -25,7 +25,7 @@ angular.module('dashboardCtrl', [])
 					onUpdate: handleUpdate
 				});
 			});
-		}, 2000);
+		}, 200);
 
 		 function handleUpdate(evt) {
 	        Dashboards.updateIndexes(evt.from.id, null, evt.oldIndex, evt.newIndex);

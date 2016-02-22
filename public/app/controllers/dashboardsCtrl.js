@@ -8,7 +8,7 @@ angular.module('dashboardsCtrl', [])
 
 		var user = $window.sessionStorage.getItem('username');
 
-		Dashboards.getAllDashboards(user).success(function(dashboards) {			
+		Dashboards.getAllDashboards(user).success(function(dashboards) {
 			$scope.dashboards = dashboards;
 		}).error(function(err) {
 			console.log('Error on loading dashboards', err);
@@ -19,9 +19,10 @@ angular.module('dashboardsCtrl', [])
 			$location.path('/dashboard/' + id);
 		};
 
-		$scope.removeDash = function(index) {		
-			var id = $scope.dashboards[index]._id;	
+		$scope.removeDash = function(index) {
+			var id = $scope.dashboards[index]._id;
 			Dashboards.remove(id);
+			$scope.dashboards.splice(index, 1);
 		};
 
 		$scope.modalDashboard = function() {
@@ -35,7 +36,7 @@ angular.module('dashboardsCtrl', [])
 			}).then(function(modal) {
 			    modal.element.modal();
 			    modal.close.then(function(result) {
-			    	Dashboards.getAllDashboards()
+			    	Dashboards.getAllDashboards(user)
 			    	.success(function(data) {
 			    		$scope.dashboards = data;
 			    	});
