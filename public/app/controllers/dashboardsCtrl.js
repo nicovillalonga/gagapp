@@ -2,17 +2,32 @@ angular.module('dashboardsCtrl', [])
 	.controller('allDashController', ['$scope', '$location', '$window', 'Dashboards', 'ModalService',
 	function($scope, $location, $window, Dashboards, ModalService) {
 
-		if($window.localStorage.getItem('listsUpdated') !== null) {
-			$window.localStorage.removeItem('listsUpdated');
-		}
-
 		var user = $window.sessionStorage.getItem('username');
 
 		Dashboards.getAllDashboards(user).success(function(dashboards) {
+			console.log('dash loaded'),
 			$scope.dashboards = dashboards;
+			separateDashboards(dashboards);
 		}).error(function(err) {
 			console.log('Error on loading dashboards', err);
-		})
+		});
+
+		function isUser(usr) {
+			return usr === user;
+		};
+
+		function separateDashboards(dashboards) {
+			console.log(dashboards);
+			$scope.ownedDashboards = dashboards.filter(function(dash) {
+				return isUser(dash.owner);
+			});
+
+			$scope.participantDashboards = dashboards.filter(function(dash) {
+				return dash.participants.some(function(participant) {
+					return isUser(participant.username);
+				});
+			});
+		};
 
 		$scope.selectDashboard = function(index) {
 			var id = $scope.dashboards[index]._id;

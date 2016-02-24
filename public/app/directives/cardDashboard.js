@@ -5,6 +5,7 @@ angular.module('cardDash', [])
 		//restrict: 'A',
 		scope: {
 			text: '@',
+			owner: '=',
 			select: '&',
 			remove: '&'
 		},

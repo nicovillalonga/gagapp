@@ -2,8 +2,8 @@
 
 	<div class="row dashboards-created" style="background-color: #F3F3F3; overflow: auto; border-radius: 7px;">
 
-		<div ng-repeat="dash in dashboards track by dash._id">
-			<div card-dashboard text="{{dash.text}}" remove="removeDash($index)" select="selectDashboard($index)"></div>
+		<div ng-repeat="dash in ownedDashboards track by dash._id">
+			<div card-dashboard text="{{dash.text}}" owner="true" remove="removeDash($index)" select="selectDashboard($index)"></div>
 		</div>
 	</div>
 
@@ -15,5 +15,10 @@
 		</div>
 	</div>
 
-	<div class="dashboards-participating" style="background-color: #F3F3F3; overflow: auto; border-radius: 7px;"></div>
+	<div class="row dashboards-created" style="background-color: #F3F3F3; overflow: auto; border-radius: 7px;">
+
+		<div ng-repeat="dash in participantDashboards track by dash._id">
+			<div card-dashboard text="{{dash.text}}" owner="false" select="selectDashboard($index)"></div>
+		</div>
+	</div>
 </div>
