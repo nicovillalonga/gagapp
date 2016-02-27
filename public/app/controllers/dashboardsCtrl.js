@@ -5,8 +5,6 @@ angular.module('dashboardsCtrl', [])
 		var user = $window.sessionStorage.getItem('username');
 
 		Dashboards.getAllDashboards(user).success(function(dashboards) {
-			console.log('dash loaded'),
-			$scope.dashboards = dashboards;
 			separateDashboards(dashboards);
 		}).error(function(err) {
 			console.log('Error on loading dashboards', err);
@@ -17,7 +15,6 @@ angular.module('dashboardsCtrl', [])
 		};
 
 		function separateDashboards(dashboards) {
-			console.log(dashboards);
 			$scope.ownedDashboards = dashboards.filter(function(dash) {
 				return isUser(dash.owner);
 			});
@@ -29,15 +26,16 @@ angular.module('dashboardsCtrl', [])
 			});
 		};
 
-		$scope.selectDashboard = function(index) {
-			var id = $scope.dashboards[index]._id;
+		$scope.selectDashboard = function(typeDash, index) {
+			var dashboard = typeDash === 'owner' ? $scope.ownedDashboards : $scope.participantDashboards;
+			var id = dashboard[index]._id;
 			$location.path('/dashboard/' + id);
 		};
 
 		$scope.removeDash = function(index) {
-			var id = $scope.dashboards[index]._id;
+			var id = $scope.ownedDashboards[index]._id;
 			Dashboards.remove(id);
-			$scope.dashboards.splice(index, 1);
+			$scope.ownedDashboards.splice(index, 1);
 		};
 
 		$scope.modalDashboard = function() {
@@ -53,7 +51,7 @@ angular.module('dashboardsCtrl', [])
 			    modal.close.then(function(result) {
 			    	Dashboards.getAllDashboards(user)
 			    	.success(function(data) {
-			    		$scope.dashboards = data;
+			    		separateDashboards(data);
 			    	});
 			    });
 			}).catch(function(error) {
