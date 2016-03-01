@@ -12,6 +12,7 @@ angular.module('gapp', [
 	'cardTask',
 	'dashboardsService',
 	'authService',
+	'taskService',
 	'userService',
 	'socketService'
 ])

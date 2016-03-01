@@ -3,11 +3,10 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	bcrypt = require('bcrypt-nodejs'),
 	// activity schema	
-	ActivitySchema = new Schema({
-	  	id: {type: String, required: true, unique: true},
-	  	type: { type: String},
-	  	user: { type: String},
-	  	date: { type: Date}
+	ActivitySchema = new Schema({	  	
+	  	type: { type: String, required: true},
+	  	user: { type: String, required: true},
+	  	date: { type: Date, default: Date.now}
 	});
 
 // return the model

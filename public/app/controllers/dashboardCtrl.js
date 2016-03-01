@@ -1,11 +1,11 @@
 angular.module('dashboardCtrl', [])
-	.controller('dashController', ['$scope', '$routeParams', '$timeout', '$window', 'Dashboards', 'ModalService',
-	function($scope, $routeParams, $timeout, $window, Dashboards, ModalService) {
+	.controller('dashController', ['$scope', '$routeParams', '$timeout', '$window', 'Dashboards', 'ModalService', 'Task',
+	function($scope, $routeParams, $timeout, $window, Dashboards, ModalService, Task) {
 
 		var dashId = $routeParams.dashboard;
 
 		Dashboards.getDashboard(dashId).success(function(dash) {
-			$scope.lists = dash.lists;
+			$scope.lists = dash.lists;			
 			Dashboards.setActualDashboard(dash);
 		}).error(function(err) {
 			console.log('Error on loading Dashboard ' + dashId, err);
@@ -53,4 +53,12 @@ angular.module('dashboardCtrl', [])
 				console.log(error)
 			});
 		};
+
+		$scope.createTask = function() {
+			Task.createTask(dashId).success(function(dash) {
+				console.log('Success on creating Task ');
+			}).error(function(err) {
+				console.log('Error on creating Task ' + err);
+			});
+		}
 	}]);
