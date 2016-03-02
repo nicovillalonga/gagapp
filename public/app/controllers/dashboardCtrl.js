@@ -35,9 +35,11 @@ angular.module('dashboardCtrl', [])
 	        Dashboards.updateIndexes(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
 	    };
 
-    	$scope.showModal = function(target) {
+    	$scope.showModal = function(type, target) {
+    		var view = type === "view" ? "modalTask.html" : "createTask.html";
+    		var template = "app/views/pages/dashboards/" + view;
 		    ModalService.showModal({
-			    templateUrl: "app/views/pages/dashboards/modalTask.html",
+			    templateUrl: template,
 			    controller: "modalController",
 			    inputs: {
 			    	dashId: dashId,

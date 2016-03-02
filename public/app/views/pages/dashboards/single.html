@@ -11,7 +11,7 @@
 						</div>
 						<ul class="list-content" id="{{::list.name}}" style="min-height: 25px; list-style: none; margin-left: -40px;">
 							<!--repeat through tasks inside every list-->
-							<li card-task ng-click="showModal($event)" id="{{task.id}}" class="sort-list" ng-sortable ng-repeat="task in list.tasks track by task.id" style="margin-bottom: 5px; cursor: move;" name="{{task.name}}"></li>
+							<li card-task ng-click="showModal('view', $event)" id="{{task.id}}" class="sort-list" ng-sortable ng-repeat="task in list.tasks track by task.id" style="margin-bottom: 5px; cursor: move;" name="{{task.name}}"></li>
 						</ul>
 					</div>
 				</div>
@@ -21,7 +21,11 @@
 
 		<!--right vew to display log-->
 		<div class="col-sm-2">
-			
+			<div class="row">
+				<div ng-click="showModal('create')" class="btn btn-primary" style="border-radius: 7px; padding: 7%;">
+					Create Dashboard..
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

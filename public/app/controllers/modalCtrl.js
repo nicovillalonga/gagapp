@@ -58,6 +58,13 @@ angular.module('modalCtrl', [])
 			$scope.close();
 		};
 
+		$scope.createTask = function() {
+			var name = document.querySelector('.name').value;
+			var description = document.querySelector('.description').value;
+
+			console.log(name, ' -- ', description);
+		};
+
 		$scope.close = function(result) {
 			$element.modal('hide');
 	 		$scope.$destroy();
