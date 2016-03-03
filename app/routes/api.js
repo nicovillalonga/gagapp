@@ -371,19 +371,82 @@ module.exports = function(app, express) {
 		});
 
 
+	function isListSaved(reqObj) {
+		if(reqObj.length !== reqObj.dashboard.lists.length) {
+			setTimeout(function () {
+				isListSaved(reqObj);
+			}, 150);
+		} else {
+			saveDashboard(reqObj);
+		}
+	};
+
+	function saveDashboard(reqObj) {
+		var dashboard = reqObj.dashboard;
+		var req = reqObj.req;
+		var res = reqObj.res;
+
+		// set the dashboard information (comes from the request)
+		dashboard.id = 1;
+		dashboard.text = req.body.text;
+		dashboard.owner = req.body.owner;
+		dashboard.actualSprint = 1;
+
+		
+		// save the dashboard and check for errors
+		dashboard.save(function(err) {
+			if (err) {
+				// duplicate entry
+				if (err.code === 11000)
+					return res.json({ success: false, message: 'A dashboard with that name already exists. '});
+				else
+					return res.send(err);
+			}
+
+			Dashboard.findOne({ text: req.body.text })
+				.populate('lists') // only works if we pushed refs to children
+				.exec(function (err, Dashboard) {
+					if (err) return res.send(err);
+					res.json({ message: 'Dashboard created!.. '});
+				});
+		});
+	};
+
 
 	apiRouter.route('/dashboards')
 		.post(function(req, res) {
 			
-			var dashboard = new Dashboard();			
+			var dashboard = new Dashboard();
+			var list,
+				listNames = ['Backlog', 'Todo', 'Progress', 'Done'];
+			var length = listNames.length;
+			var reqObj = {
+				"dashboard": dashboard,
+				"req": req,
+				"res": res,
+				"length": length
+			};
+
+			listNames.forEach(function(el, i) {
+				(function(i, length) {
+					list = new List();
+					list.id = i;
+					list.name = listNames[i];
+					list.tasks = [];
+					list.save(function(err, newList) {
+						if (err) {
+							return res.send(err);
+						}
+
+						dashboard.lists.push(newList._id);
+					});
+
+					((i === length - 1) && isListSaved(reqObj));
+				})(i, length);
+			});
+
 			
-			var lists = [],
-				list1,
-				list2,
-				list3,
-				list4;
-			
-			list1 = new List();
+			/*list1 = new List();
 			list1.id = 1;
 			list1.name = 'Backlog';		
 			list1.tasks = [];	
@@ -443,11 +506,11 @@ module.exports = function(app, express) {
 									});
 								});
 								
-						});	    
-					});    
-				});			    
-			});				
-		});	
+						});
+					});
+				});
+			});*/
+		});
 
 
 
