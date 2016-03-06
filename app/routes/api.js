@@ -23,7 +23,7 @@ var User = require('../models/user'),
 	});
 
 	function createLists() {
-		var listNames = ['Todo', 'Progress', 'Done'];
+		var listNames = ['Backlog', 'Todo', 'Progress', 'Done'];
 		var i,
 			length = listNames.length;
 		var list,

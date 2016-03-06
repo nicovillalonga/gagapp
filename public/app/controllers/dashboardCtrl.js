@@ -25,7 +25,7 @@ angular.module('dashboardCtrl', [])
 					onUpdate: handleUpdate
 				});
 			});
-		}, 200);
+		}, 700);
 
 		 function handleUpdate(evt) {
 	        Dashboards.updateIndexes(evt.from.id, null, evt.oldIndex, evt.newIndex);
@@ -35,9 +35,11 @@ angular.module('dashboardCtrl', [])
 	        Dashboards.updateIndexes(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
 	    };
 
-    	$scope.showModal = function(target) {
+    	$scope.showModal = function(type, target) {
+    		var view = type === "view" ? "modalTask.html" : "createTask.html";
+    		var template = "app/views/pages/dashboards/" + view;
 		    ModalService.showModal({
-			    templateUrl: "app/views/pages/dashboards/modalTask.html",
+			    templateUrl: template,
 			    controller: "modalController",
 			    inputs: {
 			    	dashId: dashId,
@@ -45,9 +47,8 @@ angular.module('dashboardCtrl', [])
 			    }
 			}).then(function(modal) {
 			    modal.element.modal();
-			    modal.close.then(function(result) {
-			    	console.log(result);
-			    });
+			    /*modal.close.then(function(result) {
+			    });*/
 			}).catch(function(error) {
 				console.log(error)
 			});

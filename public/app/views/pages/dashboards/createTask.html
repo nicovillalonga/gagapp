@@ -1,0 +1,52 @@
+<div class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content" style="margin-left: -150px; width: 150%;">
+      
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="close(false)" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h2 class="modal-title">Create Task</h2>
+      </div>
+
+      <div class="modal-body">
+      	<div class="row">
+      		<!--left modal side-->
+      		<div class="col-md-8">
+
+      			<!--task name section-->
+            <div class="row">
+              <div class="col-md-12">
+                <h4>Task Name</h4>
+              </div>
+            
+              <div class="col-md-12">
+                <textarea class="name" rows="4" cols="80" style="resize: none; border-radius: 7px; padding: 5px 0 0 8px;"></textarea>
+              </div>
+            </div>
+
+            <!--task description section-->
+      			<div class="row">
+      				<div class="col-md-12">
+      					<h4>Task Description</h4>
+      				</div>
+      			
+      				<div class="col-md-12">
+      					<textarea class="description" rows="4" cols="80" style="resize: none; border-radius: 7px; padding: 5px 0 0 8px;"></textarea>
+      				</div>
+      			</div>
+      		</div>
+
+      		<!--right modal side-->
+      		<div class="col-md-4">
+      			
+      		</div>
+      	</div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" ng-click="createTask($event)" class="btn btn-success">Create</button>
+        <button type="button" ng-click="close(false)" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>

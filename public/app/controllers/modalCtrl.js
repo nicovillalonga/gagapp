@@ -2,13 +2,9 @@ angular.module('modalCtrl', [])
 	.controller('modalController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'dashId', 'target', 'close',
 	function($scope, $routeParams, $timeout, $element, $window, Dashboards, dashId, target, close) {
 		
-		var background;
-		var modalContent;
-		var modalContentClicked = false;
-		var taskId; 
+		var taskId;
 		var listName;
 		var task;
-		var editedTask = {};
 
 		if(dashId && target) {
 			taskId = parseInt(target.currentTarget.id);
@@ -21,7 +17,11 @@ angular.module('modalCtrl', [])
 		}
 		
 
-		/*$timeout(function() {
+		/*var background;
+		var modalContent;
+		var modalContentClicked = false;
+		
+		$timeout(function() {
 			//register the click outside the modal to destroy since its not implemented
 			modalContent = document.querySelector('.modal-content');
 			background = document.querySelector('.fade');
@@ -56,6 +56,13 @@ angular.module('modalCtrl', [])
 
 			Dashboards.createDashboard($scope.dashName, user);
 			$scope.close();
+		};
+
+		$scope.createTask = function() {
+			var name = document.querySelector('.name').value;
+			var description = document.querySelector('.description').value;
+
+			console.log(name, ' -- ', description);
 		};
 
 		$scope.close = function(result) {
