@@ -23,27 +23,6 @@ var User = require('../models/user'),
 	    }
 	});
 
-	/*function createLists() {
-		var listNames = ['Backlog', 'Todo', 'Progress', 'Done'];
-		var i,
-			length = listNames.length;
-		var list,
-			lists = [];
-
-		for (i = 0; i < length; i++) {
-			list = new List();
-			list.id = i;
-			list.name = listNames[i];			
-			list.save(function (err, newList) {
-			    if (err) throw err;
-			    console.log('List added!... ');			    
-			});
-			lists.push(list);
-		}
-
-		return lists;
-	};*/
-
 module.exports = function(app, express) {
 
 	var apiRouter = express.Router();
@@ -216,7 +195,7 @@ module.exports = function(app, express) {
 		        console.log("email is verified, username: " + username);
 
 	        	User.findOne({username: username}, function(err, user) {
-					if (err) res.send(err);
+					if (err) return res.send(err);
 
 					if(user){
 		        		user.validated = true;
@@ -326,7 +305,7 @@ module.exports = function(app, express) {
 		})
 		.get(function(req, res) {
 			User.find(function(err, users) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 				// return the users
 				res.json(users);
 			});
@@ -347,7 +326,7 @@ module.exports = function(app, express) {
 		// (accessed at GET http://localhost:8080/api/users/:user_id)
 		.get(function(req, res) {
 			User.findById(req.params.user_id, function(err, user) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 					// return that user
 					res.json(user);
 			});
@@ -357,7 +336,7 @@ module.exports = function(app, express) {
 		.put(function(req, res) {
 			// use our user model to find the user we want
 			User.findById(req.params.user_id, function(err, user) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 				//update the users info only if its new
 				if (req.body.email) user.email = req.body.email;
 				if (req.body.username) user.username = req.body.username;
@@ -365,7 +344,7 @@ module.exports = function(app, express) {
 
 				// save the user
 				user.save(function(err) {
-					if (err) res.send(err);
+					if (err) return res.send(err);
 					res.json({ message: 'User updated!' });
 				});
 			});
@@ -385,7 +364,7 @@ module.exports = function(app, express) {
 	apiRouter.route('/userName/:username')
 		.get(function(req, res) {
 			User.find({username: req.params.username}, function(err, user) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 				res.json(user);
 			});	
 		});
@@ -422,13 +401,6 @@ module.exports = function(app, express) {
 				else
 					return res.send(err);
 			}
-
-			Dashboard.findOne({ text: req.body.text })
-				.populate('lists') // only works if we pushed refs to children
-				.exec(function (err, Dashboard) {
-					if (err) return res.send(err);
-					res.json({ message: 'Dashboard created!.. '});
-				});
 		});
 	};
 
@@ -464,72 +436,6 @@ module.exports = function(app, express) {
 					((i === length - 1) && isListSaved(reqObj));
 				})(i, length);
 			});
-
-			
-			/*list1 = new List();
-			list1.id = 1;
-			list1.name = 'Backlog';		
-			list1.tasks = [];	
-			list1.save(function (err1, newList1) {
-			    if (err1) return res.send(err1);
-			    
-			    dashboard.lists.push(newList1._id);
-
-			    list2 = new List();
-				list2.id = 2;
-				list2.name = 'Todo';
-				list2.tasks = [];			
-				list2.save(function (err2, newList2) {
-				    if (err2) return res.send(err2);
-				    	
-				    dashboard.lists.push(newList2._id);	
-				    list3 = new List();
-					list3.id = 3;
-					list3.name = 'Progress';		
-					list3.tasks = [];	
-					list3.save(function (err3, newList3) {
-					    if (err3) return res.send(err3);
-					    
-					    dashboard.lists.push(newList3._id);	
-					    list4 = new List();
-						list4.id = 4;
-						list4.name = 'Done';	
-						list4.tasks = [];		
-						list4.save(function (err4, newList4) {
-						    if (err4) return res.send(err4);						    
-
-						    dashboard.lists.push(newList4._id);
-						    // create a new instance of the Dashboard model
-								
-							// set the dashboard information (comes from the request)
-							dashboard.id = 1;
-							dashboard.text = req.body.text;
-							dashboard.owner = req.body.owner;
-							dashboard.actualSprint = 1;								
-
-							
-							// save the dashboard and check for errors
-							dashboard.save(function(err5) {
-								if (err5) {
-									// duplicate entry
-									if (err5.code === 11000)
-										return res.json({ success: false, message: 'A dashboard with that name already exists. '});
-									else
-										return res.send(err5);
-								}								
-
-								Dashboard.findOne({ text: req.body.text })
-									.populate('lists') // only works if we pushed refs to children
-									.exec(function (err6, Dashboard) {
-										if (err6) return res.send(err6);
-										res.json({ message: 'Dashboard created!.. '});
-									});
-								});
-								
-						});
-					});
-				});
-			});*/
 		});
 
 
@@ -539,13 +445,8 @@ module.exports = function(app, express) {
 		.get(function(req, res) {
 			Dashboard.find({ $or: [{owner: req.params.owner}, {participants: {username: req.params.owner}} ]}, 
 				function(err, dashboards) {
-					if (err) res.send(err);
-					// return the dashboards				
-					res.json(dashboards);
-			})
-			.populate('lists') // only works if we pushed refs to children
-			.exec(function (err2, Dashboard) {
-				if (err2) return res.send(err2);				
+					if (err) return res.send(err);
+					return res.json(dashboards);
 			});
 		});
 
@@ -555,15 +456,14 @@ module.exports = function(app, express) {
 	apiRouter.route('/dashboard/:_id')
 		.get(function(req, res) {
 			Dashboard.findById(req.params._id, function(err, dashboard) {
-				if (err) res.send(err);
-					// return that dashboard
-					res.json(dashboard);
+				if (err) return res.send(err);
+				
+				return res.json(dashboard);
 			})
-			.populate('lists') // only works if we pushed refs to children
-			.exec(function (err2, Dashboard) {
-				if (err2) return res.send(err2);				
-			});
+			.populate('lists');
 		})
+
+
 		.delete(function(req, res) {
 			Dashboard.remove({ _id: req.params._id }, function(err, user) {
 				if (err) return res.send(err);
@@ -575,11 +475,11 @@ module.exports = function(app, express) {
 	apiRouter.route('/task')
 		.post(function(req, res) {
 			// create a new instance of the Task model
-			var task = new Task();
-			
 			var dashId = req.body.dashId;
+			var list;
+			var task = new Task();			
 			
-			// set the task information (comes from the request)		
+			// set the task information (comes from the request)
 	  		task.index = req.body.index;
 	  		task.sprint = req.body.sprint;
 			task.storyPoints = req.body.storyPoints;
@@ -602,26 +502,31 @@ module.exports = function(app, express) {
 			);*/
 
 			Dashboard.findById(dashId, function(err, dashboard) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 
-				dashboard.lists[0].tasks.push(task);
+				List.findOne({name: 'Backlog'}, function(err, list) {
+					list.tasks.push(task);
+					list.save(function(err, newList) {
+						if (err) {
+							return res.send(err);
+						}
+					});
+					
+					//dashboard.version += 1;
+					
+					/*dashboard.findOneAndUpdate({lists: {id: 0}}, {$push: {}}, {upsert:true}, function(err){
+					    if (err) res.send(err);
+						res.json({ message: 'Task created!.. name: ' + task.name });
+					});*/
+					
+					//var subdoc = dashboard.lists[0].tasks[0];
+					//dashboard.markModified('lists');				
+					//dashboard.markModified('lists[0].tasks');				
 
-				dashboard.version += 1;
-				
-				console.log(dashboard);
-				
-				/*dashboard.findOneAndUpdate({lists: {id: 0}}, {$push: {}}, {upsert:true}, function(err){
-				    if (err) res.send(err);
-					res.json({ message: 'Task created!.. name: ' + task.name });
-				});*/
-				
-				//var subdoc = dashboard.lists[0].tasks[0];
-				//dashboard.markModified('lists');				
-				//dashboard.markModified('lists[0].tasks');				
-
-				dashboard.save(function (err) {
-					if (err) return res.send(err);
-					res.json({ message: 'Task created!.. name: ' + task.name });					
+					dashboard.save(function (err) {
+						if (err) return res.send(err);
+						res.json({ message: 'Task created!.. name: ' + task.name });
+					});
 				});
 			});
 

@@ -5,7 +5,7 @@ angular.module('dashboardCtrl', [])
 		var dashId = $routeParams.dashboard;
 
 		Dashboards.getDashboard(dashId).success(function(dash) {
-			$scope.lists = dash.lists;			
+			$scope.lists = dash.lists;
 			Dashboards.setActualDashboard(dash);
 		}).error(function(err) {
 			console.log('Error on loading Dashboard ' + dashId, err);
