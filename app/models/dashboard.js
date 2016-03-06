@@ -1,16 +1,18 @@
 // grab the packages that we need for the dasboard model
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
-	bcrypt = require('bcrypt-nodejs'),
+	bcrypt = require('bcrypt-nodejs'),	
+	List = require('./list')
 	// dashboard schema
 	DashboardSchema = new Schema({
-	  	id: {type: String},
+		id: {type: String},
 	  	text: { type: String, required: true, index: { unique: true }},
 	  	owner: { type: String, required: true},
 	  	actualSprint: {type: Number, required: true},
+	  	version: { type: Number, default: 0},
 	  	participants: [],
 	  	sprints: [],
-	  	lists: []
+	  	lists: [{ type: Schema.Types.ObjectId, ref: 'List' }]
 	});
 
 // return the model

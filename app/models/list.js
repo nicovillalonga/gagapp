@@ -2,10 +2,12 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	bcrypt = require('bcrypt-nodejs'),
+	Dashboard = require('./dashboard'),
+	Task = require('./task')
 	// list schema	
 	ListSchema = new Schema({
-	  	id: {type: String, required: true, unique: true},
-	  	name: { type: String, required: true},
+		id: {type: String, required: true},
+	  	name: { type: String, required: true},	  	
 	  	tasks: []
 	});
 

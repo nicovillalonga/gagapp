@@ -1,6 +1,7 @@
 var User = require('../models/user'),
 	List = require('../models/list'),
 	Dashboard = require('../models/dashboard'),
+	Task = require('../models/task'),
 	jwt = require('jsonwebtoken'),    
 	config = require('../../config'),
 	//directTransport = require('nodemailer-direct-transport'),
@@ -22,22 +23,6 @@ var User = require('../models/user'),
 	    }
 	});
 
-	function createLists() {
-		var listNames = ['Backlog', 'Todo', 'Progress', 'Done'];
-		var i,
-			length = listNames.length;
-		var list,
-			lists = [];
-
-		for (i = 0; i < length; i++) {
-			list = new List();
-			list.id = i;
-			list.name = listNames[i];
-			lists.push(list);
-		}
-
-		return lists;
-	};
 
 module.exports = function(app, express) {
 
@@ -211,7 +196,7 @@ module.exports = function(app, express) {
 		        console.log("email is verified, username: " + username);
 
 	        	User.findOne({username: username}, function(err, user) {
-					if (err) res.send(err);
+					if (err) return res.send(err);
 
 					if(user){
 		        		user.validated = true;
@@ -321,7 +306,7 @@ module.exports = function(app, express) {
 		})
 		.get(function(req, res) {
 			User.find(function(err, users) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 				// return the users
 				res.json(users);
 			});
@@ -342,7 +327,7 @@ module.exports = function(app, express) {
 		// (accessed at GET http://localhost:8080/api/users/:user_id)
 		.get(function(req, res) {
 			User.findById(req.params.user_id, function(err, user) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 					// return that user
 					res.json(user);
 			});
@@ -352,7 +337,7 @@ module.exports = function(app, express) {
 		.put(function(req, res) {
 			// use our user model to find the user we want
 			User.findById(req.params.user_id, function(err, user) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 				//update the users info only if its new
 				if (req.body.email) user.email = req.body.email;
 				if (req.body.username) user.username = req.body.username;
@@ -360,7 +345,7 @@ module.exports = function(app, express) {
 
 				// save the user
 				user.save(function(err) {
-					if (err) res.send(err);
+					if (err) return res.send(err);
 					res.json({ message: 'User updated!' });
 				});
 			});
@@ -380,38 +365,79 @@ module.exports = function(app, express) {
 	apiRouter.route('/userName/:username')
 		.get(function(req, res) {
 			User.find({username: req.params.username}, function(err, user) {
-				if (err) res.send(err);
+				if (err) return res.send(err);
 				res.json(user);
 			});	
 		});
 
 
+	function isListSaved(reqObj) {
+		if(reqObj.length !== reqObj.dashboard.lists.length) {
+			setTimeout(function () {
+				isListSaved(reqObj);
+			}, 150);
+		} else {
+			saveDashboard(reqObj);
+		}
+	};
+
+	function saveDashboard(reqObj) {
+		var dashboard = reqObj.dashboard;
+		var req = reqObj.req;
+		var res = reqObj.res;
+
+		// set the dashboard information (comes from the request)
+		dashboard.id = 1;
+		dashboard.text = req.body.text;
+		dashboard.owner = req.body.owner;
+		dashboard.actualSprint = 1;
+
+		
+		// save the dashboard and check for errors
+		dashboard.save(function(err) {
+			if (err) {
+				// duplicate entry
+				if (err.code === 11000)
+					return res.json({ success: false, message: 'A dashboard with that name already exists. '});
+				else
+					return res.send(err);
+			}
+		});
+	};
+
 
 	apiRouter.route('/dashboards')
 		.post(function(req, res) {
-			// create a new instance of the Dashboard model
+			
 			var dashboard = new Dashboard();
-			
-			// set the dashboard information (comes from the request)
-			dashboard.id = 1;
-			dashboard.text = req.body.text;
-			dashboard.owner = req.body.owner;
-			dashboard.actualSprint = 1;
-			dashboard.lists = createLists();
-			
-			// save the dashboard and check for errors
-			dashboard.save(function(err) {
-				if (err) {
-					// duplicate entry
-					if (err.code === 11000)
-						return res.json({ success: false, message: 'A dashboard with that name already exists. '});
-					else
-						return res.send(err);
-				}
+			var list,
+				listNames = ['Backlog', 'Todo', 'Progress', 'Done'];
+			var length = listNames.length;
+			var reqObj = {
+				"dashboard": dashboard,
+				"req": req,
+				"res": res,
+				"length": length
+			};
 
-				res.json({ message: 'Dashboard created!.. name: ' + dashboard.name});
+			listNames.forEach(function(el, i) {
+				(function(i, length) {
+					list = new List();
+					list.id = i;
+					list.name = listNames[i];
+					list.tasks = [];
+					list.save(function(err, newList) {
+						if (err) {
+							return res.send(err);
+						}
+
+						dashboard.lists.push(newList._id);
+					});
+
+					((i === length - 1) && isListSaved(reqObj));
+				})(i, length);
 			});
-		});	
+		});
 
 
 
@@ -420,9 +446,8 @@ module.exports = function(app, express) {
 		.get(function(req, res) {
 			Dashboard.find({ $or: [{owner: req.params.owner}, {participants: {username: req.params.owner}} ]}, 
 				function(err, dashboards) {
-					if (err) res.send(err);
-					// return the dashboards				
-					res.json(dashboards);
+					if (err) return res.send(err);
+					return res.json(dashboards);
 			});
 		});
 
@@ -432,15 +457,89 @@ module.exports = function(app, express) {
 	apiRouter.route('/dashboard/:_id')
 		.get(function(req, res) {
 			Dashboard.findById(req.params._id, function(err, dashboard) {
-				if (err) res.send(err);
-					// return that dashboard
-					res.json(dashboard);
-			});
+				if (err) return res.send(err);
+				
+				return res.json(dashboard);
+			})
+			.populate('lists');
 		})
+
+
 		.delete(function(req, res) {
 			Dashboard.remove({ _id: req.params._id }, function(err, user) {
 				if (err) return res.send(err);
 				res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
+			});
+		});
+
+
+	apiRouter.route('/task')
+		.post(function(req, res) {
+			// create a new instance of the Task model
+			var dashId = req.body.dashId;
+			var list;
+			var task = new Task();			
+			
+			// set the task information (comes from the request)
+	  		task.index = req.body.index;
+	  		task.sprint = req.body.sprint;
+			task.storyPoints = req.body.storyPoints;
+			task.priority = req.body.priority;
+			task.name = req.body.name;
+			task.description = req.body.description;
+			task.asignedTo = req.body.asignedTo;
+
+			//var dashboardModel = new Dashboard();
+
+			/*Dashboard.findByIdAndUpdate(
+			    dashId,
+			    {$push: {lists: task}},
+			    {safe: true, upsert: true},
+			    function(err, data) {
+			        if (err) return res.send(err);
+					res.json({ message: 'Task created!.. name: ' + task.name });
+					console.log(data);
+			    }
+			);*/
+
+			Dashboard.findById(dashId, function(err, dashboard) {
+				if (err) return res.send(err);
+
+				List.findOne({name: 'Backlog'}, function(err, list) {
+					list.tasks.push(task);
+					list.save(function(err, newList) {
+						if (err) {
+							return res.send(err);
+						}
+					});
+					
+					//dashboard.version += 1;
+					
+					/*dashboard.findOneAndUpdate({lists: {id: 0}}, {$push: {}}, {upsert:true}, function(err){
+					    if (err) res.send(err);
+						res.json({ message: 'Task created!.. name: ' + task.name });
+					});*/
+					
+					//var subdoc = dashboard.lists[0].tasks[0];
+					//dashboard.markModified('lists');				
+					//dashboard.markModified('lists[0].tasks');				
+
+					dashboard.save(function (err) {
+						if (err) return res.send(err);
+						res.json({ message: 'Task created!.. name: ' + task.name });
+					});
+				});
+			});
+
+		});	
+
+
+
+	apiRouter.route('/task/:_id')
+		.delete(function(req, res) {
+			Task.remove({ _id: req.params._id }, function(err, user) {
+				if (err) return res.send(err);
+				res.json({ message: 'Task ' + req.params._id + ' Successfully deleted' });
 			});
 		});
 

@@ -2,16 +2,17 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	bcrypt = require('bcrypt-nodejs'),
+	Activity = require('./activity')
 	// taks schema
 	TaskSchema = new Schema({
-	  	id: {type: String, required: true, unique: true},
-	  	index: { type: Number},
-	  	sprint: { type: Number},
+	  	index: { type: Number, default: 0},
+	  	sprint: { type: Number, default: 0},
 	  	storyPoints: { type: Number},
 	  	priority: { type: Number},
-	  	name: { type: String},
+	  	name: { type: String, required: true},
 	  	description: { type: String},
-	  	activities: []
+	  	asignedTo: { type: String},
+	  	activities: [{ type: Schema.Types.ObjectId, ref: 'Activity' }]
 	});
 
 // return the model
