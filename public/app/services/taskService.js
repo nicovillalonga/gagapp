@@ -22,7 +22,7 @@ angular.module('taskService', [])
 				asignedTo: ""
 			}
 
-			return $http.post('/api/task', task);			
+			return $http.post('/api/task', task);
 		};
 
 		return {
