@@ -4,12 +4,16 @@ angular.module('dashboardCtrl', [])
 
 		var dashId = $routeParams.dashboard;
 
-		Dashboards.getDashboard(dashId).success(function(dash) {
-			$scope.lists = dash.lists;
-			Dashboards.setActualDashboard(dash);
-		}).error(function(err) {
-			console.log('Error on loading Dashboard ' + dashId, err);
-		});
+		updateDashboard();
+
+		function updateDashboard() {
+			Dashboards.getDashboard(dashId).success(function(dash) {
+				$scope.lists = dash.lists;
+				Dashboards.setActualDashboard(dash);
+			}).error(function(err) {
+				console.log('Error on loading Dashboard ' + dashId, err);
+			});
+		};
 
 		//need $timeout so dom finish renders before trying to getElementById
 		$timeout(function() {
@@ -35,30 +39,40 @@ angular.module('dashboardCtrl', [])
 	        Dashboards.updateIndexes(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
 	    };
 
-    	$scope.showModal = function(type, target) {
-    		var view = type === "view" ? "modalTask.html" : "createTask.html";
+    	$scope.showModal = function(target, opts) {
+    		var index = (opts && opts.index) || 0;
+    		var view = opts && opts.type ? "createTask.html" : "modalTask.html";
     		var template = "app/views/pages/dashboards/" + view;
 		    ModalService.showModal({
 			    templateUrl: template,
 			    controller: "modalController",
 			    inputs: {
 			    	dashId: dashId,
-			    	target: target
+			    	target: target,
+			    	index: index
 			    }
 			}).then(function(modal) {
 			    modal.element.modal();
-			    /*modal.close.then(function(result) {
-			    });*/
+			    modal.close.then(function(result) {
+			    	(result && updateDashboard());
+			    });
 			}).catch(function(error) {
 				console.log(error)
 			});
 		};
 
+		function getLastIndexList(listName) {
+			return $scope.lists.filter(function(list) {
+				return list.name === listName;
+			})[0].tasks.length;
+		};
+
 		$scope.createTask = function() {
-			Task.createTask(dashId).success(function(dash) {
-				console.log('Success on creating Task ');
-			}).error(function(err) {
-				console.log('Error on creating Task ' + err);
-			});
-		}
+			var opts = {
+				type: 'task',
+				index: getLastIndexList('Backlog')
+			};
+
+			$scope.showModal(null, opts);
+		};
 	}]);

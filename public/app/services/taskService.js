@@ -10,15 +10,15 @@ angular.module('taskService', [])
 			return $http.delete('/api/task/' + _id );
 		};
 
-		function createTask(dashId) {
-			var task = {
-				dashId: dashId,
-				index: 0,
+		function createTask(task) {
+			var newTask = {
+				dashId: task.dashId,
+				index: task.index,
+				name: task.name,
+				description: task.description,
 		  		sprint: 0,
 				storyPoints: 0,
 				priority: 0,
-				name: "Nueva Task",
-				description: "Nueva Task description",
 				asignedTo: ""
 			}
 

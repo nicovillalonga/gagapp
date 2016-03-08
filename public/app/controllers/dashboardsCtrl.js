@@ -44,7 +44,8 @@ angular.module('dashboardsCtrl', [])
 			    controller: "modalController",
 			    inputs: {
 			    	dashId: null,
-			    	target: null
+			    	target: null,
+			    	index: null
 			    }
 			}).then(function(modal) {
 			    modal.element.modal();

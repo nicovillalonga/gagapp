@@ -25,7 +25,7 @@ angular.module('dashboardsService', [])
 		};
 
 		function createDashboard(text, owner) {
-			return $http.post('/api/dashboards', {"text": text, "owner": owner});			
+			return $http.post('/api/dashboards', {"text": text, "owner": owner});
 		};
 
 		function updateIndexes(listName, listNameTarget, oldIndex, newIndex) {

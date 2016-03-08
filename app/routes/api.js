@@ -87,10 +87,8 @@ module.exports = function(app, express) {
 	apiRouter.use('/', function(req, res, next) {
 		//var dontAuth = /((\/userName\/.+)|(\/users\/)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
 		var dontAuth = /((\/userName\/.+)|(\/sendRegister\/.+\/.+)|(\/verify\/.+))/;
-		
-		console.log(req.path);
-		console.log(req.method);
-		console.log(req.path + '    - ' + 'regex - ' + dontAuth.test(req.path));
+
+		console.log(req.method, ' - ',req.path + ' - ' + 'regex - ' + dontAuth.test(req.path));
 
 		//if a url is contained in dontAuth then it should escape the authentication
 		if(dontAuth.test(req.path) || (req.path === '/users/' && req.method === 'POST')) {
@@ -423,14 +421,13 @@ module.exports = function(app, express) {
 			listNames.forEach(function(el, i) {
 				(function(i, length) {
 					list = new List();
-					list.id = i;
+					list.dashboardId = dashboard._id;
 					list.name = listNames[i];
 					list.tasks = [];
 					list.save(function(err, newList) {
 						if (err) {
 							return res.send(err);
 						}
-
 						dashboard.lists.push(newList._id);
 					});
 
@@ -466,7 +463,7 @@ module.exports = function(app, express) {
 
 
 		.delete(function(req, res) {
-			Dashboard.remove({ _id: req.params._id }, function(err, user) {
+			Dashboard.remove({ _id: req.params._id }, function(err, dash) {
 				if (err) return res.send(err);
 				res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
 			});
@@ -478,7 +475,7 @@ module.exports = function(app, express) {
 			// create a new instance of the Task model
 			var dashId = req.body.dashId;
 			var list;
-			var task = new Task();			
+			var task = new Task();
 			
 			// set the task information (comes from the request)
 	  		task.index = req.body.index;
@@ -505,7 +502,7 @@ module.exports = function(app, express) {
 			Dashboard.findById(dashId, function(err, dashboard) {
 				if (err) return res.send(err);
 
-				List.findOne({name: 'Backlog'}, function(err, list) {
+				List.findOne({dashboardId: dashId, name: 'Backlog'}, function(err, list) {
 					list.tasks.push(task);
 					list.save(function(err, newList) {
 						if (err) {
@@ -526,7 +523,7 @@ module.exports = function(app, express) {
 
 					dashboard.save(function (err) {
 						if (err) return res.send(err);
-						res.json({ message: 'Task created!.. name: ' + task.name });
+						res.json({ message: 'Task created!.. name: ' + task.name, type: 'task', obj: task });
 					});
 				});
 			});

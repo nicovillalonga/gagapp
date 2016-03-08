@@ -1,6 +1,6 @@
 angular.module('modalCtrl', [])
-	.controller('modalController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'dashId', 'target', 'close',
-	function($scope, $routeParams, $timeout, $element, $window, Dashboards, dashId, target, close) {
+	.controller('modalController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'Task', 'dashId', 'target', 'index', 'close',
+	function($scope, $routeParams, $timeout, $element, $window, Dashboards, Task, dashId, target, index, close) {
 		
 		var taskId;
 		var listName;
@@ -61,11 +61,22 @@ angular.module('modalCtrl', [])
 		$scope.createTask = function() {
 			var name = document.querySelector('.name').value;
 			var description = document.querySelector('.description').value;
+			var task = {
+				dashId: dashId,
+				name: name,
+				description: description,
+				index: index
+			};
 
-			console.log(name, ' -- ', description);
+			Task.createTask(task).success(function(dash) {
+				$scope.taskCreated = true;
+				$scope.close();
+			}).error(function(err) {
+				console.log('Error on creating Task ' + err);
+			});
 		};
 
-		$scope.close = function(result) {
+		$scope.close = function() {
 			$element.modal('hide');
 	 		$scope.$destroy();
 		};
@@ -83,7 +94,7 @@ angular.module('modalCtrl', [])
 		//remove escape key press listener when modal is closed
 		$scope.$on('$destroy', function(){
 			removeEventListener('keydown', closeOnEscape);
-			close(task, 500);
+			close($scope.taskCreated, 500);
 		});
 
 		function saveActivitie(type, activitie) {
