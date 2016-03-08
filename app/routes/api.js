@@ -385,7 +385,6 @@ module.exports = function(app, express) {
 		var res = reqObj.res;
 
 		// set the dashboard information (comes from the request)
-		dashboard.id = 1;
 		dashboard.text = req.body.text;
 		dashboard.owner = req.body.owner;
 		dashboard.actualSprint = 1;
