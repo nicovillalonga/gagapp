@@ -74,7 +74,7 @@ angular.module('dashboardsService', [])
 			return actualDash.lists.find(function(list) {
 					return list.name === listName;
 				}).tasks.find(function(task) {
-					return task.id === taskId;
+					return task._id === taskId;
 				});
 		};
 
