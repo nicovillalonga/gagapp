@@ -7,7 +7,7 @@ angular.module('modalCtrl', [])
 		var task;
 
 		if(dashId && target) {
-			taskId = parseInt(target.currentTarget.id);
+			taskId = target.currentTarget.id;
 			listName = target.currentTarget.parentNode.id;
 			task = Dashboards.getTask(listName, taskId);
 
