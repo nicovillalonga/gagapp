@@ -5,7 +5,6 @@ var mongoose = require('mongoose'),
 	List = require('./list')
 	// dashboard schema
 	DashboardSchema = new Schema({
-		id: {type: String},
 	  	text: { type: String, required: true, index: { unique: true }},
 	  	owner: { type: String, required: true},
 	  	actualSprint: {type: Number, required: true},

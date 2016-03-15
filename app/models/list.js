@@ -6,8 +6,8 @@ var mongoose = require('mongoose'),
 	Task = require('./task')
 	// list schema	
 	ListSchema = new Schema({
-		id: {type: String, required: true},
-	  	name: { type: String, required: true},	  	
+		dashboardId: { type: Schema.Types.ObjectId, ref: 'Dashboard' },
+	  	name: { type: String, required: true },
 	  	tasks: []
 	});
 
