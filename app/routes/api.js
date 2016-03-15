@@ -462,10 +462,15 @@ module.exports = function(app, express) {
 
 
 		.delete(function(req, res) {
-			Dashboard.remove({ _id: req.params._id }, function(err, dash) {
+			List.remove({dashboardId: req.params._id}, function(err, lists) {
 				if (err) return res.send(err);
-				res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
+				
+				Dashboard.remove({ _id: req.params._id }, function(err, dash) {
+					if (err) return res.send(err);
+					res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
+				});
 			});
+
 		});
 
 
