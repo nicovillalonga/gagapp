@@ -22,6 +22,31 @@ header .navbar {
   color: red;
 }
 
+.buttonCreate {
+  border-radius: 7px;
+  margin: 40px 0 40px 0;
+  padding: 12%;
+}
+
+.delete {
+  padding: 2% 3% 0 0;
+}
+
+/* CARD
+====================== */
+.card {
+  background-color: #F3F3F3;
+  overflow: auto;
+  border-radius: 7px;
+}
+
+.cardBody {
+  border: 1px solid #dddddd;
+  border-radius: 7px;
+  background-color: white;
+  margin: 40px 0 40px 0;
+}
+
 /* ANIMATIONS
 ====================== */
 .spinner {

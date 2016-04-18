@@ -1,9 +1,9 @@
 <div class="col-sm-4">
 	<div class="card" style="cursor: pointer;">
-		<div class="card-header pull-right" style="padding: 2% 3% 0 0;">
+		<div class="card-header pull-right delete">
 			<span ng-if="owner" ng-click="remove()" class="glyphicon glyphicon-remove"></span>
 		</div>
-		<div class="card-body" ng-click="select()" style="border: 1px solid #dddddd; border-radius: 7px; background-color: white; margin: 40px 0 40px 0;">
+		<div class="card-body cardBody" ng-click="select()">
 			<div style="clear: both;"></div>
 			<div class="card-text" style="padding: 10%;">
 				{{text}}
