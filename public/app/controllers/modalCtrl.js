@@ -6,15 +6,19 @@ angular.module('modalCtrl', [])
 		var listName;
 		var task;
 
-		if(dashId && target) {
-			taskId = target.currentTarget.id;
-			listName = target.currentTarget.parentNode.id;
-			task = Dashboards.getTask(listName, taskId);
+		function init(){
+			if(dashId && target) {
+				taskId = target.currentTarget.id;
+				listName = target.currentTarget.parentNode.id;
+				task = Dashboards.getTask(listName, taskId);
 
-			$scope.taskName = task.name;
-			$scope.taskDescription = task.description;
-			$scope.activities = task.activities;
-		}
+				$scope.taskName = task.name;
+				$scope.taskDescription = task.description;
+				$scope.activities = task.activities;
+			}			
+		};
+
+		init();
 		
 
 		/*var background;
@@ -80,6 +84,20 @@ angular.module('modalCtrl', [])
 			$element.modal('hide');
 	 		$scope.$destroy();
 		};
+
+		$scope.delete = function() {			
+
+			var taskToDelete = {
+				dashId: dashId,
+				listName: listName
+			};
+
+			Task.deleteTask(taskId, taskToDelete).success(function(dash) {
+				$scope.close();
+			}).error(function(err) {
+				console.log('Error on deleting Task ' + err);
+			});
+		}
 
 		//allow close modal on escape key press	
 		addEventListener('keydown', closeOnEscape);
