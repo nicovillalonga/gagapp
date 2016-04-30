@@ -536,12 +536,44 @@ module.exports = function(app, express) {
 
 
 
-	apiRouter.route('/task/:_id')
+	apiRouter.route('/task/:_id/:dashId/:listName')
 		.delete(function(req, res) {
-			Task.remove({ _id: req.params._id }, function(err, user) {
+			var dashId = req.params.dashId,
+				taskId =req.params._id;
+				listName = req.params.listName;
+
+			Dashboard.findById(dashId, function(err, dashboard) {
 				if (err) return res.send(err);
-				res.json({ message: 'Task ' + req.params._id + ' Successfully deleted' });
+				
+				var index = undefined;
+
+				List.findOne({dashboardId: dashId, name: listName}, function(err, listResponse) {
+					
+					for (var i = 0, len = listResponse.tasks.length; i < len; i++) {
+						if (listResponse.tasks[i]._id == req.params._id) {
+							index = i;
+						}
+					}
+
+					if (typeof index !== 'undefined') {
+						listResponse.tasks.splice(index, 1);
+						
+						listResponse.save(function(err, newList) {
+							if (err) {
+								return res.send(err);
+							}
+						});
+					}
+
+					dashboard.save(function (err) {
+						if (err) return res.send(err);
+						res.json({ message: 'Task ' + req.params._id + ' Successfully deleted' });
+					});
+					
+				});
+				
 			});
+			
 		});
 
 
