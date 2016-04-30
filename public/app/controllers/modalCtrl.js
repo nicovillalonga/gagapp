@@ -73,7 +73,7 @@ angular.module('modalCtrl', [])
 			};
 
 			Task.createTask(task).success(function(dash) {
-				$scope.taskCreated = true;
+				$scope.taskSuccess = true;
 				$scope.close();
 			}).error(function(err) {
 				console.log('Error on creating Task ' + err);
@@ -93,6 +93,7 @@ angular.module('modalCtrl', [])
 			};
 
 			Task.deleteTask(taskId, taskToDelete).success(function(dash) {
+				$scope.taskSuccess = true;
 				$scope.close();
 			}).error(function(err) {
 				console.log('Error on deleting Task ' + err);
@@ -112,7 +113,7 @@ angular.module('modalCtrl', [])
 		//remove escape key press listener when modal is closed
 		$scope.$on('$destroy', function(){
 			removeEventListener('keydown', closeOnEscape);
-			close($scope.taskCreated, 500);
+			close($scope.taskSuccess, 500);
 		});
 
 		function saveActivitie(type, activitie) {

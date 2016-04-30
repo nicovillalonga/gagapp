@@ -553,7 +553,7 @@ module.exports = function(app, express) {
 						if (listResponse.tasks[i]._id == req.params._id) {
 							index = i;
 						}
-					}					
+					}
 
 					if (typeof index !== 'undefined') {
 						listResponse.tasks.splice(index, 1);
@@ -563,7 +563,6 @@ module.exports = function(app, express) {
 								return res.send(err);
 							}
 						});
-						
 					}
 
 					dashboard.save(function (err) {
