@@ -4,8 +4,10 @@ var mongoose = require('mongoose'),
 	bcrypt = require('bcrypt-nodejs'),
 	// sprint schema
 	SprintSchema = new Schema({
-	  	id: {type: String, required: true, unique: true},
-	  	endDate: { type: Date},
+	  	//id: { type: String, required: true, unique: true },
+	  	sprint: { type: Number },
+	  	startDate: { type: Date, required: true },
+	  	endDate: { type: Date },
 	  	tasks: []
 	});
 

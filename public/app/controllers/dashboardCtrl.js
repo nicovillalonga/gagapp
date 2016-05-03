@@ -75,4 +75,12 @@ angular.module('dashboardCtrl', [])
 
 			$scope.showModal(null, opts);
 		};
+
+		$scope.startSprint = function() {
+			Dashboards.startSprint(dashId).success(function(dash) {
+				console.log(dash);
+			}).error(function(err) {
+				console.log(err)
+			});
+		};
 	}]);

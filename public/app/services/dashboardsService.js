@@ -82,6 +82,11 @@ angular.module('dashboardsService', [])
 			actualDash = dashboard;
 		};
 
+		function startSprint(_id) {
+			console.log('startSprint srv');
+			return $http.post('/api/startSprint/' + _id);
+		}
+
 		return {
 			createDashboard: createDashboard,
 			getAllDashboards: getAllDashboards,
@@ -89,7 +94,8 @@ angular.module('dashboardsService', [])
 			getDashboard: getDashboard,
 			getTask: getTask,
 			updateIndexes: updateIndexes,
-			setActualDashboard: setActualDashboard
+			setActualDashboard: setActualDashboard,
+			startSprint: startSprint
 		}
 
 	}]);

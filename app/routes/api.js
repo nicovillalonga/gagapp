@@ -2,6 +2,7 @@ var User = require('../models/user'),
 	List = require('../models/list'),
 	Dashboard = require('../models/dashboard'),
 	Task = require('../models/task'),
+	Sprint = require('../models/sprint'),
 	jwt = require('jsonwebtoken'),    
 	config = require('../../config'),
 	//directTransport = require('nodemailer-direct-transport'),
@@ -387,7 +388,7 @@ module.exports = function(app, express) {
 		// set the dashboard information (comes from the request)
 		dashboard.text = req.body.text;
 		dashboard.owner = req.body.owner;
-		dashboard.actualSprint = 1;
+		dashboard.actualSprint = 0;
 
 		
 		// save the dashboard and check for errors
@@ -462,13 +463,42 @@ module.exports = function(app, express) {
 
 
 		.delete(function(req, res) {
+			var dashboard;
+			Dashboard.findById(req.params._id, function(err, dash) {
+				if(err) {
+					console.log('cant find dashboard to delete: ', err);
+				}
+
+				dashboard = dash;
+				console.log(dashboard);
+			});
+
 			List.remove({dashboardId: req.params._id}, function(err, lists) {
 				if (err) return res.send(err);
-				
+
 				Dashboard.remove({ _id: req.params._id }, function(err, dash) {
-					if (err) return res.send(err);
-					res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
+					if(err) {
+						console.log('cant find dashboard to delete: ', err);
+					}
+
+					Sprint.remove({ _id: { $in: dashboard.sprints } }, function(err, sprint) {
+						if (err) {
+							console.log('error deleting Sprints ', err);
+						}
+					});
 				});
+
+				/*Dashboard.remove({ _id: req.params._id }, function(err, dash) {
+					if (err) return res.send(err);
+
+					Sprint.remove({ _id: dash.actualSprintId }, function(err, sprint) {
+						if (err) {
+							console.log('error deleting Sprints ', err);
+						}
+					});
+
+					res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
+				});*/
 			});
 
 		});
@@ -546,12 +576,43 @@ module.exports = function(app, express) {
 
 
 
-	/*
-	apiRouter.route('/register')
+	apiRouter.route('/startSprint/:_id')
 		.post(function(req, res) {
+			var sprint = new Sprint();
+			var sprintTasks = [];
+			Dashboard.findById(req.params._id)
+				.populate('lists')
+				.exec(function(err, dashboard) {
+					if (err) return res.send(err);
 
+					sprint.startDate = new Date();
+					dashboard.actualSprint = dashboard.actualSprint > 0 ? dashboard.actualSprint + 1 : 1;
+					dashboard.actualSprintId = sprint._id;
+					sprint.sprint = dashboard.actualSprint;
+
+					dashboard.lists.forEach(function(list) {
+						list.tasks.forEach(function(task) {
+							sprint.tasks.push(task);
+						});
+					});
+
+					dashboard.sprints.push(sprint._id);
+
+					sprint.save(function(err, spr) {
+						if(err) {
+							console.log('ERR', err);
+						}
+					});
+
+					dashboard.save(function(err, dash) {
+						if(err) {
+							console.log('ERR', err);
+						}
+					});
+
+					return res.json(dashboard);
+				});
 		});
-	*/
 
 		
 	return apiRouter;
