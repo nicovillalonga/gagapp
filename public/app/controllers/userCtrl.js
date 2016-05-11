@@ -36,6 +36,8 @@ angular.module('userCtrl', ['userService', 'socketService'])
 						$scope.message = data.message;
 					});
 				}
+			}).error(function(err) {
+				console.log(err);
 			});
 		};
 	}])
