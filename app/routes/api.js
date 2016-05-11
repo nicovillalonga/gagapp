@@ -12,14 +12,15 @@ module.exports = function(app, express) {
 
 	var apiRouter = express.Router();
 	
+	// route middleware to verify a token excepting register
+	apiRouter.post('/authenticate', apiAuth.postAuth);
+	apiRouter.use('/', apiAuth.verifyToken);
+	
 	// test route to make sure everything is working
 	// accessed at GET http://localhost:8080/api
 	apiRouter.get('/', function(req, res) {
 		res.json({ message: 'hooray! welcome to our api!' });
 	});
-	// route middleware to verify a token excepting register
-	apiRouter.use('/', apiAuth.verifyToken);
-	apiRouter.post('/authenticate', apiAuth.postAuth);
 
 	//Mail route
 	apiRouter.post('/sendRegister/:email/:username', apiMail.sendRegister);

@@ -17,6 +17,8 @@ angular.module('authService', [])
 				.success(function(data) {
 					AuthToken.setToken(data.token);
 					return data;
+				}).error(function(err) {
+					console.log(err);
 				});
 		};
 
@@ -122,3 +124,4 @@ angular.module('authService', [])
 
 		return interceptorFactory;
 	}]);
+	

@@ -13,49 +13,53 @@ module.exports = {
 	postUsers: function(req, res) {
 		// create a new instance of the User model
 		var user = new User();
+		var errMsg = "A user with that username already exists.";
 		
 		setUser(user, {email: req.body.email, username: req.body.username, password: req.body.password});
 		// save the user and check for errors
-		user.save(function(err) {
-			if (err) {
-				// duplicate entry
-				if (err.code === 11000)
-					return res.json({ success: false, message: 'A user with that username already exists. '});
-				else
-					return res.send({success: false, err: err});
-			}
-
-			res.json({ message: 'User created!.. email: ' + user.email + ' -- username: ' + user.username});
+		user.save()
+		.then(function(user) {
+			console.log('user', user);
+			res.json({ message: 'User created!.. email: ' + user.email + ' -- username: ' + user.username, success: true});
+		})
+		.catch(function(err) {
+			//if err.code === 11000 mongoose duplicate entry.
+			errMsg = err.code === 11000 ? errMsg : err;
+			res.json({ success: false, message: errMsg});
 		});
 	},
 
 	getUsers: function(req, res) {
-		User.find(function(err, users) {
-			if (err) return res.send(err);
-			// return the users
+		User.find().exec()
+		.then(function(users) {
 			res.json(users);
+		})
+		.catch(function(err) {
+			res.send(err);			
 		});
 	},
 
 	getUserId: function(req, res) {
-		User.findById(req.params.user_id, function(err, user) {
-			if (err) return res.send(err);
-				// return that user
-				res.json(user);
+		User.findById(req.params.user_id).exec()
+		.then(function(user) {
+			res.json(user);
+		})
+		.catch(function(err) {
+			res.send(err);			
 		});
 	},
 
 	putUserId: function(req, res) {
-		// use our user model to find the user we want
-		User.findById(req.params.user_id, function(err, user) {
-			if (err) return res.send(err);
-			
+		User.findById(req.params.user_id).exec()
+		.then(function(user) {
 			setUser(user, {email: req.body.email, username: req.body.username, password: req.body.password});
-			// save the user
-			user.save(function(err) {
-				if (err) return res.send(err);
-				res.json({ message: 'User updated!' });
-			});
+			user.save();
+		})
+		.then(function() {
+			res.json({ message: 'User updated!' });
+		})
+		.catch(function(err) {
+			res.send(err)
 		});
 	},
 
@@ -67,9 +71,12 @@ module.exports = {
 	},
 
 	getUserName: function(req, res) {
-		User.find({username: req.params.username}, function(err, user) {
-			if (err) return res.send(err);
+		User.find({username: req.params.username}).exec()
+		.then(function(user) {
 			res.json(user);
-		});	
+		})
+		.catch(function(err) {
+			res.send(err);
+		});
 	}
 }

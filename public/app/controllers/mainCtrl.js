@@ -27,7 +27,7 @@ angular.module('mainCtrl', [])
 		$scope.doLogin = function() {
 			$scope.processing = true;
 			// clear the error
-			$scope.error = '';
+			$scope.message = '';
 			login($scope.loginData.username, $scope.loginData.password);
 		};
 
@@ -42,7 +42,7 @@ angular.module('mainCtrl', [])
 					$scope.isLoggedIn = true;
 					$location.path('/users');
 				} else
-					$scope.error = data.message;
+					$scope.message = data.message;
 			});
 		};
 
@@ -59,7 +59,7 @@ angular.module('mainCtrl', [])
 
 		$scope.doRegister = function() {
 			$scope.processing = true;
-			$scope.error = '';
+			$scope.message = '';
 
 			Auth.register($scope.registerData.email, $scope.registerData.username, $scope.registerData.password).success(function(data) {
 				$scope.processing = false;
@@ -67,11 +67,49 @@ angular.module('mainCtrl', [])
 				if (data.success !== false) {
 					login($scope.registerData.username, $scope.registerData.password);
 				} else {
-					$scope.error = data.message;
+					$scope.message = data.message;
 				}
 			});
 		};
 
+		$scope.$on('sendRegisterEvt', function(evt, userData) {
+			sendRegister(userData);
+		});
+
+		function sendRegister(userData) {
+			User.create(userData)
+			.then(function(data) {
+				if(data.data.success === false) {
+					$scope.processing = false;
+					$scope.message = data.data.message;
+				} else {
+					$scope.message = 'user created! -- sending verification email to ' + userData.email;
+					$rootScope.$broadcast('registerFinishEvt', $scope.message);
+					authRegister(userData.email, userData.username);
+				}
+
+				$rootScope.$broadcast('registerFinishEvt', $scope.message);
+			}).catch(function(err) {
+				console.log(err);
+				$scope.processing = false;
+				//$scope.message = data.message;
+				$rootScope.$broadcast('registerFinishEvt', $scope.message);
+			});
+		};
+
+		function authRegister(email, username) {
+			Auth.sendRegister(email, username)
+			.success(function(data) {
+				$scope.processing = false;
+				socket.emit('user:new', data);
+				$location.path('/sendRegister');
+			})
+			.error(function(data){
+				$scope.processing = false;
+				$scope.message = data.message;
+				$rootScope.$broadcast('registerFinishEvt', $scope.message);
+			});
+		};
 
 		$scope.sendRegister = function() {
 			var userData = {
@@ -81,34 +119,8 @@ angular.module('mainCtrl', [])
 					password: $scope.registerData.password
 				};
 
-			$scope.error = '';
+			$scope.message = '';
 			$scope.processing = true;
-			/**TODO: refactor function in a service (same logic in usercreateCtrl)*/
-			User.create(userData).success(function(data) {
-				console.log(data);				
-				if(data.success === false) {
-					//$scope.error = data.message;
-					$scope.processing = false;
-					$scope.error = data.message;
-				} else {
-					Auth.sendRegister($scope.registerData.email, $scope.registerData.username).success(function(data) {
-						console.log('socket: ' + data);	
-						socket.emit('user:new', {
-							user:   {
-							            email: $scope.registerData.email,										
-										username: $scope.registerData.username,
-										password: $scope.registerData.password
-									}
-						});					
-						$scope.processing = false;
-						$location.path('/sendRegister');
-					})
-					.error(function(data){
-						$scope.processing = false;
-						$scope.error = data.message;
-					});
-				}
-			});
-			
-		}
+			sendRegister(userData);
+		};
 	}]);
