@@ -57,15 +57,15 @@ module.exports = {
 				list.dashboardId = dashboard._id;
 				list.name = listNames[i];
 				list.tasks = [];
+				list.orderId = i;
 				list.save()
 				.then(function(newList) {
 					dashboard.lists.push(newList._id);
+					((i === length - 1) && isListSaved(reqObj));
 				})
 				.catch(function(err) {
 					res.send(err);
 				});
-
-				((i === length - 1) && isListSaved(reqObj));
 			})(i, length);
 		});
 	},

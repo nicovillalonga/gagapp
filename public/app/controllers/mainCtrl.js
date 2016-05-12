@@ -34,18 +34,18 @@ angular.module('mainCtrl', [])
 
 
 		function login(username, password) {
-			Auth.login(username, password).success(function(data) {
+			Auth.login(username, password)
+			.then(function(data) {
 				$scope.processing = false;
 				// if a user successfully logs in, redirect to users page
-				if (data.success) {
+				if (data.data.success) {
 					$window.sessionStorage.setItem('username', username);
 					$scope.isLoggedIn = true;
 					$location.path('/users');
 				} else
-					$scope.message = data.message;
+					$scope.message = data.data.message;
 			});
 		};
-
 
 		// function to handle logging out
 		$scope.doLogout = function() {
@@ -54,22 +54,6 @@ angular.module('mainCtrl', [])
 			$scope.user = {};
 			$window.sessionStorage.removeItem('username');
 			$location.path('/login');
-		};
-
-
-		$scope.doRegister = function() {
-			$scope.processing = true;
-			$scope.message = '';
-
-			Auth.register($scope.registerData.email, $scope.registerData.username, $scope.registerData.password).success(function(data) {
-				$scope.processing = false;
-				// if a user successfully logs in, redirect to users page
-				if (data.success !== false) {
-					login($scope.registerData.username, $scope.registerData.password);
-				} else {
-					$scope.message = data.message;
-				}
-			});
 		};
 
 		$scope.$on('sendRegisterEvt', function(evt, userData) {
@@ -99,25 +83,25 @@ angular.module('mainCtrl', [])
 
 		function authRegister(email, username) {
 			Auth.sendRegister(email, username)
-			.success(function(data) {
+			.then(function(data) {
 				$scope.processing = false;
 				socket.emit('user:new', data);
 				$location.path('/sendRegister');
 			})
-			.error(function(data){
+			.catch(function(data){
 				$scope.processing = false;
-				$scope.message = data.message;
+				$scope.message = data.data.message;
 				$rootScope.$broadcast('registerFinishEvt', $scope.message);
 			});
 		};
 
 		$scope.sendRegister = function() {
 			var userData = {
-		            email: $scope.registerData.email,
-					//email: 'nicovilllalonga90@gmail.com',
-					username: $scope.registerData.username,
-					password: $scope.registerData.password
-				};
+	            email: $scope.registerData.email,
+				//email: 'nicovilllalonga90@gmail.com',
+				username: $scope.registerData.username,
+				password: $scope.registerData.password
+			};
 
 			$scope.message = '';
 			$scope.processing = true;

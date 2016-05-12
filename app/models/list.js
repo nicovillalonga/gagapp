@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
 	ListSchema = new Schema({
 		dashboardId: { type: Schema.Types.ObjectId, ref: 'Dashboard' },
 	  	name: { type: String, required: true },
+	  	orderId: { type: Number },
 	  	tasks: []
 	});
 

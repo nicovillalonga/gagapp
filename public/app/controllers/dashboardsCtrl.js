@@ -38,13 +38,12 @@ angular.module('dashboardsCtrl', [])
 			Dashboards.remove(id)
 			.then(function(data) {
 				//*TODO dispaly message succesfully deleted
-				console.log(data);
+				$scope.ownedDashboards.splice(index, 1);
 			})
 			.catch(function(err) {
 				//*TODO dispaly message error while deleting
 				console.log(err);
 			});
-			$scope.ownedDashboards.splice(index, 1);
 		};
 
 		$scope.modalDashboard = function() {

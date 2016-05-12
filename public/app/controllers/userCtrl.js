@@ -28,9 +28,8 @@ angular.module('userCtrl', ['userService', 'socketService'])
 	// controller applied to user edit page
 	.controller('userEditController', ['$scope', '$routeParams', 'User', 'socket',
 	function($scope, $routeParams, User, socket) {
-
 		var userId = $routeParams.user_id;
-			
+		
 		// variable to hide/show elements of the view
 		// differentiates between create or edit pages
 		$scope.type = 'edit';
@@ -74,32 +73,6 @@ angular.module('userCtrl', ['userService', 'socketService'])
 					$scope.message = err;
 				});
 			}
-
-
-			/*User.getByUsername($scope.userData.username)
-			.success(function (data) {
-				exists = data.length > 0;
-				if (!exists || (exists && data[0]._id === userId)) {
-					User.update($routeParams.user_id, $scope.userData)
-					.then(function(data) {
-						$scope.processing = false;
-						socket.emit('user:new', data);
-						// clear the form
-						$scope.userData = {};
-						// bind the message from our API to $scope.message
-						$scope.message = data.message;
-					}
-					, function(err) {
-						console.log('err', err);
-						$scope.message = 'Error while updating user';
-					});
-				} else {
-					$scope.message = 'Username already in use';
-				}				
-			})
-			.error(function(err) {
-				$scope.message = 'Error while getting user';
-			});*/
 		};
 	}])
 
@@ -107,7 +80,6 @@ angular.module('userCtrl', ['userService', 'socketService'])
 	// inject the User factory
 	.controller('userController', ['$scope', 'User', 'socket',
 	function($scope, User, socket) {
-		
 		// funtion to get all the users
 		$scope.getAllUsers = function(){			
 			// set a processing variable to show loading things
@@ -136,15 +108,8 @@ angular.module('userCtrl', ['userService', 'socketService'])
 		$scope.deleteUser = function(id) {
 			
 			// accepts the user id as a parameter
-			User.delete(id).success(function(data) {
-				// get all users to update the table
-				// you can also set up your api
-				// to return the list of users with the delete call
-				/*User.all().success(function(data) {
-					$scope.processing = false;
-					$scope.users = data;
-				});*/
-
+			User.delete(id)
+			.then(function() {
 				// call server to do broadcast emit (everyone else)
 				socket.emit('user:delete', {});
 				// update for the client who delete

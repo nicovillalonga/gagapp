@@ -20,9 +20,8 @@ var transporter = nodemailer.createTransport('SMTP',{
 
 module.exports = {
 	sendRegister: function(req, res) {
-		console.log('sending mail to ' + req.body.email + '----------------');
-
 		var username = req.body.username;
+		console.log('sending mail to ' + req.body.email + '----------------');
 
 		rand = Math.floor((Math.random() * 10000) + 100000);
 		host = req.get('host');
@@ -38,15 +37,13 @@ module.exports = {
 
 	    User.findOne({username: username}).exec()
 	    .then(function(user) {
-			console.log('usr finded');
 			//saves de random number to the user in case after email is sent page is close
 			user.validatorId = rand;
 			return user.save();
 	    })
 		.then(function(user) {
-			console.log('*** user saved ***', user);
-			console.log('rand saved: ' + rand);
-			//after saving randId, email is sent
+			//after saving validatorId, email is sent
+			console.log('user saved: ' + user.username + ', with validatorId: ', rand);
 			return transporter.sendMail(mailPayload);
 		})
 		.then(function(info) {
@@ -70,54 +67,13 @@ module.exports = {
 			user.validated = true;
 	    	return user.save();
 		})
-		.then(function(user) {
+		.then(function() {
 			//res.json({success: true, message: 'User validated'});
 			console.log("email is verified, username: " + username);
-			res.redirect('/verify/' + user.username);
+			res.redirect('/verify/' + username);
 		})
 		.catch(function(err) {
-			res.send(err);
+			res.redirect('/verify/' + username);
 		})
 	}
-
-
-	/* this end point is not being used now..
-	apiRouter.route('/register')
-		.post(function(req, res) {
-			// create a new instance of the User model
-			var token,
-				user = new User();
-			// set the users information (comes from the request)
-			user.email = req.body.email;
-			user.username = req.body.username;
-			user.password = req.body.password;
-			user.hasConfirm = true;
-
-			console.log('****************** REGISTER ************************');
-			
-			// save the user and check for errors
-			user.save(function(err) {
-				if (err) {
-					// duplicate entry
-					if (err.code === 11000)
-						return res.json({ success: false, message: 'agagagagag'});
-					else
-						return res.send(err);
-				}
-
-				token = jwt.sign(
-									{
-										email: user.email,
-										username: user.username
-									},
-									superSecret,
-									{
-										expiresInMinutes: 1440 // expires in 24 hours
-									}
-								);
-
-				res.json({ message: 'User created!.. email: ' + user.email + ' -- username: ' + user.username});
-			});
-		});*/
-
 }

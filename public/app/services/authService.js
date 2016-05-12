@@ -31,10 +31,7 @@ angular.module('authService', [])
 		// check if a user is logged in
 		// checks if there is a local token
 		authFactory.isLoggedIn = function() {
-			if (AuthToken.getToken())
-				return true;
-			else
-				return false;
+			return AuthToken.getToken();
 		};
 
 		// get the logged in user

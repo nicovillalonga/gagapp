@@ -5,56 +5,52 @@ var User = require('../../models/user'),
 	config = require('../../../config'),
 	superSecret = config.secret;
 
+
+function validatePassword(user, passwordInput) {
+	return user.comparePassword(passwordInput);
+}
+
 module.exports = {
 	postAuth: function(req, res) {
-		console.log(req.body);
+		console.log('Authentication for: ', req.body);
+		var resJson = { 
+			success: false,
+			message: 'Authentication failed. User not found.'
+		};
 		// find the user
 		// select the name username and password explicitly
-		User.findOne({username: req.body.username}).select('email username password validated').exec(function(err, user) {
-			if (err) throw err;
-			// no user with that username was found
-			if (!user) {
-				res.json({
-					success: false,
-					message: 'Authentication failed. User not found.'
-				});
-			} else if (user) {
+		User.findOne({username: req.body.username}).select('email username password validated').exec()
+		.then(function(user) {
+			if (user) {
 				//if user is mail validated then checks the password 
 				if(user.validated){
 					// check if password matches
-					var validPassword = user.comparePassword(req.body.password);
-					if (!validPassword) {
-						res.json({
-							success: false,
-							message: 'Authentication failed. Wrong password.'
-						});
+					if (!validatePassword(user, req.body.password)) {
+						resJson.message = 'Authentication failed. Wrong password.';
 					} else {
-						// if user is found and password is right
-						// create a token
+						// if user is found and password is correct, create a token
 						var token = jwt.sign(
-											{
-												email: user.email,
-												username: user.username
-											},
-											superSecret,
-											{
-												expiresInMinutes: 1440 // expires in 24 hours
-											});
+							{ email: user.email, username: user.username },
+							superSecret,
+							{ expiresInMinutes: 1440 }	 //expires in 24 hours
+						);
 						// return the information including token as JSON
-						res.json({
+						resJson = {
 							success: true,
 							message: 'Enjoy your token!',
 							token: token
-						});
+						};
 					}
 				} else {
 					//user has not yet validated email
-					res.json({
-							success: false,
-							message: 'User has not yet been validated, please check your email'
-					});
+					resJson.message = 'User has not yet been validated, please check your email'
 				}
 			}
+
+			res.json(resJson);
+		})
+		.catch(function(err) {
+			res.send(err);
 		});
 	},
 

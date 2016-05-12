@@ -19,8 +19,11 @@ module.exports = {
 		// save the user and check for errors
 		user.save()
 		.then(function(user) {
-			console.log('user', user);
-			res.json({ message: 'User created!.. email: ' + user.email + ' -- username: ' + user.username, success: true});
+			res.json({
+				success: true,
+				message: 'User created!.. email: ' + user.email + ' -- username: ' + user.username,
+				user: user
+			});
 		})
 		.catch(function(err) {
 			//if err.code === 11000 mongoose duplicate entry.
@@ -64,9 +67,12 @@ module.exports = {
 	},
 
 	deleteUserId: function(req, res) {
-		User.remove({ _id: req.params.user_id }, function(err, user) {
-			if (err) return res.send(err);
-			res.json({ message: 'Successfully deleted' });
+		User.remove({ _id: req.params.user_id })
+		.then(function(user) {
+			res.json({ message: 'Users ' + user.data + ' successfully deleted' });
+		})
+		.catch(function(err) {
+			res.send(err);
 		});
 	},
 

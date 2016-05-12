@@ -7,8 +7,9 @@ angular.module('verifyCtrl', [])
 		$scope.verifyed = false;
 
 		(function verifyUser() {
-			User.getByUsername(username).success(function(user) {
-				if(user.length === 0) {
+			User.getByUsername(username)
+			.then(function(user) {
+				if(user.data.length === 0) {
 					console.log('length === 0 ' + user);
 					//No se puede verificar el user
 				} else {
