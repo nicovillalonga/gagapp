@@ -54,7 +54,10 @@ angular.module('modalCtrl', [])
 		$scope.createDashboard = function() {
 			var user = $window.sessionStorage.getItem('username');
 
-			Dashboards.createDashboard($scope.dashName, user);
+			Dashboards.createDashboard($scope.dashName, user)
+			.catch(function(err){
+				console.log(err);
+			});
 			$scope.close();
 		};
 
@@ -68,10 +71,11 @@ angular.module('modalCtrl', [])
 				index: index
 			};
 
-			Task.createTask(task).success(function(dash) {
+			Task.createTask(task)
+			.then(function(dash) {
 				$scope.taskCreated = true;
 				$scope.close();
-			}).error(function(err) {
+			}).catch(function(err) {
 				console.log('Error on creating Task ' + err);
 			});
 		};

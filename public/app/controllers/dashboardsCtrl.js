@@ -4,9 +4,10 @@ angular.module('dashboardsCtrl', [])
 
 		var user = $window.sessionStorage.getItem('username');
 
-		Dashboards.getAllDashboards(user).success(function(dashboards) {
-			separateDashboards(dashboards);
-		}).error(function(err) {
+		Dashboards.getAllDashboards(user)
+		.then(function(dashboards) {
+			separateDashboards(dashboards.data);
+		}).catch(function(err) {
 			console.log('Error on loading dashboards', err);
 		});
 
@@ -34,7 +35,15 @@ angular.module('dashboardsCtrl', [])
 
 		$scope.removeDash = function(index) {
 			var id = $scope.ownedDashboards[index]._id;
-			Dashboards.remove(id);
+			Dashboards.remove(id)
+			.then(function(data) {
+				//*TODO dispaly message succesfully deleted
+				console.log(data);
+			})
+			.catch(function(err) {
+				//*TODO dispaly message error while deleting
+				console.log(err);
+			});
 			$scope.ownedDashboards.splice(index, 1);
 		};
 
@@ -51,8 +60,8 @@ angular.module('dashboardsCtrl', [])
 			    modal.element.modal();
 			    modal.close.then(function(result) {
 			    	Dashboards.getAllDashboards(user)
-			    	.success(function(data) {
-			    		separateDashboards(data);
+			    	.then(function(dashboards) {
+			    		separateDashboards(dashboards.data);
 			    	});
 			    });
 			}).catch(function(error) {

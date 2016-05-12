@@ -21,6 +21,7 @@ function saveDashboard(reqObj) {
 	var dashboard = reqObj.dashboard;
 	var req = reqObj.req;
 	var res = reqObj.res;
+	var errMsg = "A dashboard with that name already exists.";
 
 	// set the dashboard information (comes from the request)
 	dashboard.text = req.body.text;
@@ -29,16 +30,13 @@ function saveDashboard(reqObj) {
 
 	
 	// save the dashboard and check for errors
-	dashboard.save(function(err) {
-		if (err) {
-			// duplicate entry
-			if (err.code === 11000)
-				return res.json({ success: false, message: 'A dashboard with that name already exists. '});
-			else
-				return res.send(err);
-		}
+	dashboard.save()
+	.catch(function(err) {
+		errMsg = err.code === 11000 ? errMsg : err;
+		res.json({ success: false, message: errMsg});
 	});
 };
+
 
 module.exports = {
 	postDashboard: function(req, res) {
@@ -59,11 +57,12 @@ module.exports = {
 				list.dashboardId = dashboard._id;
 				list.name = listNames[i];
 				list.tasks = [];
-				list.save(function(err, newList) {
-					if (err) {
-						return res.send(err);
-					}
+				list.save()
+				.then(function(newList) {
 					dashboard.lists.push(newList._id);
+				})
+				.catch(function(err) {
+					res.send(err);
 				});
 
 				((i === length - 1) && isListSaved(reqObj));
@@ -72,31 +71,35 @@ module.exports = {
 	},
 
 	getDashboardOwner: function(req, res) {
-		Dashboard.find({ $or: [{owner: req.params.owner}, {participants: {username: req.params.owner}} ]},
-			function(err, dashboards) {
-				if (err) return res.send(err);
-				return res.json(dashboards);
+		Dashboard.find({ $or: [{owner: req.params.owner}, {participants: {username: req.params.owner}} ]}).exec()
+		.then(function(dashboards) {
+			res.json(dashboards);
+		})
+		.catch(function(err) {
+			res.send(err);
 		});
 	},
 
 	getDashboardId: function(req, res) {
-		Dashboard.findById(req.params._id, function(err, dashboard) {
-			if (err) return res.send(err);
-			
-			return res.json(dashboard);
+		Dashboard.findById(req.params._id).populate('lists').exec()
+		.then(function(dashboard) {
+			res.json(dashboard);
 		})
-		.populate('lists');
+		.catch(function(err) {
+			res.send(err);
+		});
 	},
 
 	deleteDashboardId: function(req, res) {
-		List.remove({dashboardId: req.params._id}, function(err, lists) {
-			if (err) return res.send(err);
-			
-			Dashboard.remove({ _id: req.params._id }, function(err, dash) {
-				if (err) return res.send(err);
-				res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
-			});
+		List.remove({dashboardId: req.params._id}).exec()
+		.then(function() {
+			return Dashboard.remove({ _id: req.params._id }).exec()
+		})
+		.then(function() {
+			res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
+		})
+		.catch(function(err) {
+			res.send(err);
 		});
-
-	}	
+	}
 }

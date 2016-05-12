@@ -3,33 +3,42 @@ angular.module('dashboardCtrl', [])
 	function($scope, $routeParams, $timeout, $window, Dashboards, ModalService, Task) {
 
 		var dashId = $routeParams.dashboard;
+		var dashLoaded = false;
 
 		updateDashboard();
 
 		function updateDashboard() {
-			Dashboards.getDashboard(dashId).success(function(dash) {
-				$scope.lists = dash.lists;
-				Dashboards.setActualDashboard(dash);
-			}).error(function(err) {
+			Dashboards.getDashboard(dashId)
+			.then(function(dash) {
+				$scope.lists = dash.data.lists;
+				dashLoaded = true;
+				Dashboards.setActualDashboard(dash.data);
+			}).catch(function(err) {
 				console.log('Error on loading Dashboard ' + dashId, err);
 			});
 		};
 
 		//need $timeout so dom finish renders before trying to getElementById
-		$timeout(function() {
-			var lists = $scope.lists;
-			var el;
-			//get the lists of the model and make them sortable
-			lists.forEach(function(list) {
-				el = document.getElementById(list.name);
-				Sortable.create(el, {
-					group: 'sort-list',
-					animation: 150,
-					onAdd: handleAdd,
-					onUpdate: handleUpdate
+		(function createSortable() {
+			if(!dashLoaded) {
+				$timeout(function() {
+					createSortable();
+				}, 400);
+			} else {
+				var lists = $scope.lists;
+				var el;
+				//get the lists of the model and make them sortable
+				lists.forEach(function(list) {
+					el = document.getElementById(list.name);
+					Sortable.create(el, {
+						group: 'sort-list',
+						animation: 150,
+						onAdd: handleAdd,
+						onUpdate: handleUpdate
+					});
 				});
-			});
-		}, 700);
+			}
+		})();
 
 		 function handleUpdate(evt) {
 	        Dashboards.updateIndexes(evt.from.id, null, evt.oldIndex, evt.newIndex);
