@@ -27,25 +27,25 @@ angular.module('mainCtrl', [])
 		$scope.doLogin = function() {
 			$scope.processing = true;
 			// clear the error
-			$scope.error = '';
+			$scope.message = '';
 			login($scope.loginData.username, $scope.loginData.password);
 		};
 
 
 
 		function login(username, password) {
-			Auth.login(username, password).success(function(data) {
+			Auth.login(username, password)
+			.then(function(data) {
 				$scope.processing = false;
 				// if a user successfully logs in, redirect to users page
-				if (data.success) {
+				if (data.data.success) {
 					$window.sessionStorage.setItem('username', username);
 					$scope.isLoggedIn = true;
 					$location.path('/users');
 				} else
-					$scope.error = data.message;
+					$scope.message = data.data.message;
 			});
 		};
-
 
 		// function to handle logging out
 		$scope.doLogout = function() {
@@ -56,59 +56,55 @@ angular.module('mainCtrl', [])
 			$location.path('/login');
 		};
 
+		$scope.$on('sendRegisterEvt', function(evt, userData) {
+			sendRegister(userData);
+		});
 
-		$scope.doRegister = function() {
-			$scope.processing = true;
-			$scope.error = '';
-
-			Auth.register($scope.registerData.email, $scope.registerData.username, $scope.registerData.password).success(function(data) {
-				$scope.processing = false;
-				// if a user successfully logs in, redirect to users page
-				if (data.success !== false) {
-					login($scope.registerData.username, $scope.registerData.password);
+		function sendRegister(userData) {
+			User.create(userData)
+			.then(function(data) {
+				if(data.data.success === false) {
+					$scope.processing = false;
+					$scope.message = data.data.message;
 				} else {
-					$scope.error = data.message;
+					$scope.message = 'user created! -- sending verification email to ' + userData.email;
+					$rootScope.$broadcast('registerFinishEvt', $scope.message);
+					authRegister(userData.email, userData.username);
 				}
+
+				$rootScope.$broadcast('registerFinishEvt', $scope.message);
+			}).catch(function(err) {
+				console.log(err);
+				$scope.processing = false;
+				//$scope.message = data.message;
+				$rootScope.$broadcast('registerFinishEvt', $scope.message);
 			});
 		};
 
+		function authRegister(email, username) {
+			Auth.sendRegister(email, username)
+			.then(function(data) {
+				$scope.processing = false;
+				socket.emit('user:new', data);
+				$location.path('/sendRegister');
+			})
+			.catch(function(data){
+				$scope.processing = false;
+				$scope.message = data.data.message;
+				$rootScope.$broadcast('registerFinishEvt', $scope.message);
+			});
+		};
 
 		$scope.sendRegister = function() {
 			var userData = {
-		            email: $scope.registerData.email,
-					//email: 'nicovilllalonga90@gmail.com',
-					username: $scope.registerData.username,
-					password: $scope.registerData.password
-				};
+	            email: $scope.registerData.email,
+				//email: 'nicovilllalonga90@gmail.com',
+				username: $scope.registerData.username,
+				password: $scope.registerData.password
+			};
 
-			$scope.error = '';
+			$scope.message = '';
 			$scope.processing = true;
-			/**TODO: refactor function in a service (same logic in usercreateCtrl)*/
-			User.create(userData).success(function(data) {
-				console.log(data);				
-				if(data.success === false) {
-					//$scope.error = data.message;
-					$scope.processing = false;
-					$scope.error = data.message;
-				} else {
-					Auth.sendRegister($scope.registerData.email, $scope.registerData.username).success(function(data) {
-						console.log('socket: ' + data);	
-						socket.emit('user:new', {
-							user:   {
-							            email: $scope.registerData.email,										
-										username: $scope.registerData.username,
-										password: $scope.registerData.password
-									}
-						});					
-						$scope.processing = false;
-						$location.path('/sendRegister');
-					})
-					.error(function(data){
-						$scope.processing = false;
-						$scope.error = data.message;
-					});
-				}
-			});
-			
-		}
+			sendRegister(userData);
+		};
 	}]);

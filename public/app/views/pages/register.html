@@ -24,8 +24,8 @@
 			</div>
 
 			<!-- REGISTER BUTTON -->
-			<div class="alert alert-danger" ng-if="error">
-				{{::error}}
+			<div class="alert alert-danger" ng-if="message">
+				{{::message}}
 			</div>
 			<button type="submit" class="btn btn-block btn-primary">
 				<span ng-if="!processing">Register</span>

@@ -17,6 +17,8 @@ angular.module('authService', [])
 				.success(function(data) {
 					AuthToken.setToken(data.token);
 					return data;
+				}).error(function(err) {
+					console.log(err);
 				});
 		};
 
@@ -29,10 +31,7 @@ angular.module('authService', [])
 		// check if a user is logged in
 		// checks if there is a local token
 		authFactory.isLoggedIn = function() {
-			if (AuthToken.getToken())
-				return true;
-			else
-				return false;
+			return AuthToken.getToken();
 		};
 
 		// get the logged in user
@@ -122,3 +121,4 @@ angular.module('authService', [])
 
 		return interceptorFactory;
 	}]);
+	
