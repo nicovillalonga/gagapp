@@ -181,7 +181,8 @@ module.exports = function(app, express) {
 	 *
 	 * @apiSuccess {String} message Indexes updated.	 
 	 */
-	apiRouter.put('/updateTaskIndexes/', apiDashboards.updateTaskIndexes);
+	apiRouter.post('/updateSingleListIndex/', apiTasks.updateSingleListIndex);
+	apiRouter.post('/updateMultiListIndex/', apiTasks.updateMultiListIndex);
 
 	/**
 	 * @api {post} /task Create Task
@@ -209,8 +210,8 @@ module.exports = function(app, express) {
 	 * @apiParam {String} _id _id of the task to delete.
 	 *
 	 * @apiSuccess {String} message Task Successfully deleted.
-	 */
-	apiRouter.delete('/task/:_id', apiTasks.deleteTask);
+	 */	
+	apiRouter.delete('/task/:_id/:dashId/:listName', apiTasks.deleteTask);
 
 	return apiRouter;
 };
