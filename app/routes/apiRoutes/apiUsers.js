@@ -14,7 +14,7 @@ module.exports = {
 		// create a new instance of the User model
 		var user = new User();
 		var errMsg = "A user with that username already exists.";
-		
+
 		setUser(user, {email: req.body.email, username: req.body.username, password: req.body.password});
 		// save the user and check for errors
 		user.save()
@@ -38,7 +38,7 @@ module.exports = {
 			res.json(users);
 		})
 		.catch(function(err) {
-			res.send(err);			
+			res.send(err);
 		});
 	},
 
@@ -48,7 +48,7 @@ module.exports = {
 			res.json(user);
 		})
 		.catch(function(err) {
-			res.send(err);			
+			res.send(err);
 		});
 	},
 
@@ -62,7 +62,7 @@ module.exports = {
 			res.json({ message: 'User updated!' });
 		})
 		.catch(function(err) {
-			res.send(err)
+			res.send(err);
 		});
 	},
 
@@ -85,4 +85,4 @@ module.exports = {
 			res.send(err);
 		});
 	}
-}
+};
