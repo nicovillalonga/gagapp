@@ -8,7 +8,7 @@ angular.module('taskService', [])
 
 		function remove(_id) {
 			return $http.delete('/api/task/' + _id );
-		};
+		}
 
 		function createTask(task) {
 			var newTask = {
@@ -20,14 +20,13 @@ angular.module('taskService', [])
 				storyPoints: 0,
 				priority: 0,
 				asignedTo: ""
-			}
+			};
 
 			return $http.post('/api/task', task);
-		};
+		}
 
 		return {
 			createTask: createTask,
 			remove: remove
-		}
+		};
 	}]);
-	

@@ -12,11 +12,11 @@ var List = require('../models/list'),
 module.exports = function(app, express) {
 
 	var apiRouter = express.Router();
-	
+
 	// route middleware to verify a token excepting register
 	apiRouter.post('/authenticate', apiAuth.postAuth);
 	apiRouter.use('/', apiAuth.verifyToken);
-	
+
 	// test route to make sure everything is working
 	// accessed at GET http://localhost:8080/api
 	apiRouter.get('/', function(req, res) {
@@ -43,10 +43,11 @@ module.exports = function(app, express) {
 	apiRouter.route('/dashboard/:_id')
 		.get(apiDashboards.getDashboardId)
 		.delete(apiDashboards.deleteDashboardId);
+	apiRouter.put('/updateTaskIndexes/', apiDashboards.updateTaskIndexes);
 
 	//Tasks routes
 	apiRouter.post('/task', apiTasks.postTask);
 	apiRouter.delete('/task/:_id', apiTasks.deleteTask);
-		
+
 	return apiRouter;
 };

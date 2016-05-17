@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var Dashboard = require('../../models/dashboard'),
 	List = require('../../models/list'),
@@ -10,7 +10,7 @@ module.exports = {
 		var dashId = req.body.dashId;
 		var list;
 		var task = new Task();
-		
+
 		// set the task information (comes from the request)
 		task.index = req.body.index;
 		task.sprint = req.body.sprint;
@@ -23,14 +23,11 @@ module.exports = {
 
 		Dashboard.findById(dashId).exec()
 		.then(function(dashboard) {
-			return List.findOne({dashboardId: dashId, name: 'Backlog'}).exec()
+			return List.findOne({dashboardId: dashId, name: 'Backlog'}).exec();
 		})
 		.then(function(list) {
 			list.tasks.push(task);
 			return list.save();
-		})
-		.then(function(newList) {
-			return dashboard.save();
 		})
 		.then(function() {
 			res.json({ message: 'Task created!.. name: ' + task.name, type: 'task', obj: task });
@@ -49,4 +46,4 @@ module.exports = {
 			res.send(err);
 		});
 	}
-}
+};

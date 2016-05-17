@@ -46,7 +46,7 @@ angular.module('dashboardCtrl', [])
 
 		function handleAdd(evt) {
 	        Dashboards.updateIndexes(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
-	    };
+	    }
 
     	$scope.showModal = function(target, opts) {
     		var index = (opts && opts.index) || 0;
@@ -66,7 +66,7 @@ angular.module('dashboardCtrl', [])
 			    	(result && updateDashboard());
 			    });
 			}).catch(function(error) {
-				console.log(error)
+				console.log(error);
 			});
 		};
 
@@ -74,7 +74,7 @@ angular.module('dashboardCtrl', [])
 			return $scope.lists.filter(function(list) {
 				return list.name === listName;
 			})[0].tasks.length;
-		};
+		}
 
 		$scope.createTask = function() {
 			var opts = {

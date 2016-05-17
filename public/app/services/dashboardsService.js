@@ -6,11 +6,11 @@ angular.module('dashboardsService', [])
 
 		function getAllDashboards(owner) {
 			return $http.get('/api/dashboards/' + owner);
-		};
+		}
 
 		function remove(_id) {
 			return $http.delete('/api/dashboard/' + _id );
-		};
+		}
 
 		function _sortDashboard(lists) {
 			lists.forEach(function(list) {
@@ -18,18 +18,20 @@ angular.module('dashboardsService', [])
 					return a.index - b.index;
 				});
 			});
-		};
+		}
 
 		function getDashboard(id) {
 			return $http.get('/api/dashboard/' + id);
-		};
+		}
 
 		function createDashboard(text, owner) {
 			return $http.post('/api/dashboards', {"text": text, "owner": owner});
-		};
+		}
 
 		function updateIndexes(listName, listNameTarget, oldIndex, newIndex) {
-			var tasksTarget;
+			var listTarget,
+				tasksTarget,
+				listToUpdate = [];
 			var list = actualDash.lists.slice().find(function(list) {
 				return list.name === listName;
 			});
@@ -41,33 +43,33 @@ angular.module('dashboardsService', [])
 				//move the selected element from its original position to new index position.
 				tasks.splice(newIndex, 0, tasks.splice(oldIndex, 1)[0]);
 			} else {
-				tasksTarget = actualDash.lists.find(function(list) {
+				listTarget =  actualDash.lists.find(function(list) {
 					return list.name === listNameTarget;
-				}).tasks;
+				});
+				tasksTarget = listTarget.tasks;
 
 				//remove element from original list and insert to target list
 				tasksTarget.splice(newIndex, 0, tasks.splice(oldIndex, 1)[0]);
 				//update the indexes of the target list
 				_setListIndexes(tasksTarget, newIndex);
+				listToUpdate.push(listTarget);
 			}
 
 			//update the indexes of original list
 			_setListIndexes(tasks, oldIndex);
-
-			/*TODO: $http.post the lists*/
-		};
+			listToUpdate.push(list);
+			return $http.put('/api/updateTaskIndexes/', {"lists": listToUpdate});
+		}
 
 		function _setListIndexes(tasks, index) {
 			var length = tasks.length;
-			var i;
+			var i = index > 0 ? index-1 : 0;
 
-			if(tasks.length === 0) {
-				return;
+			if(tasks.length > 0) {
+				for (i; i < length; i++) {
+					tasks[i].index = i;
+				}
 			}
-
-			for (i = index; i < length; i++) {
-				tasks[i].index = i;
-			};
 		}
 
 		function getTask(listName, taskId) {
@@ -76,11 +78,11 @@ angular.module('dashboardsService', [])
 				}).tasks.find(function(task) {
 					return task._id === taskId;
 				});
-		};
+		}
 
 		function setActualDashboard(dashboard) {
 			actualDash = dashboard;
-		};
+		}
 
 		return {
 			createDashboard: createDashboard,
@@ -90,6 +92,6 @@ angular.module('dashboardsService', [])
 			getTask: getTask,
 			updateIndexes: updateIndexes,
 			setActualDashboard: setActualDashboard
-		}
+		};
 
 	}]);

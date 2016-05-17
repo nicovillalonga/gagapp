@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var User = require('../../models/user'),
 	List = require('../../models/list'),
@@ -15,7 +15,18 @@ function isListSaved(reqObj) {
 	} else {
 		saveDashboard(reqObj);
 	}
-};
+}
+
+function saveIndexes(list, res) {
+	List.findById(list._id).exec()
+	.then(function(originaList) {
+		originaList.tasks = list.tasks;
+		return originaList.save();
+	})
+	.catch(function(err) {
+		res.send(err);
+	});
+}
 
 function saveDashboard(reqObj) {
 	var dashboard = reqObj.dashboard;
@@ -28,14 +39,13 @@ function saveDashboard(reqObj) {
 	dashboard.owner = req.body.owner;
 	dashboard.actualSprint = 1;
 
-	
 	// save the dashboard and check for errors
 	dashboard.save()
 	.catch(function(err) {
 		errMsg = err.code === 11000 ? errMsg : err;
 		res.json({ success: false, message: errMsg});
 	});
-};
+}
 
 
 module.exports = {
@@ -93,7 +103,7 @@ module.exports = {
 	deleteDashboardId: function(req, res) {
 		List.remove({dashboardId: req.params._id}).exec()
 		.then(function() {
-			return Dashboard.remove({ _id: req.params._id }).exec()
+			return Dashboard.remove({ _id: req.params._id }).exec();
 		})
 		.then(function() {
 			res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
@@ -101,5 +111,11 @@ module.exports = {
 		.catch(function(err) {
 			res.send(err);
 		});
+	},
+
+	updateTaskIndexes: function(req, res) {
+		req.body.lists.forEach(function(list) {
+			saveIndexes(list, res);
+		});
 	}
-}
+};
