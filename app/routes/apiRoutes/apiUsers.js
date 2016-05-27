@@ -4,9 +4,15 @@ var User = require('../../models/user');
 
 function setUser(user, values) {
 	// set the users information (comes from the request)
-	user.email = values.email;
-	user.username = values.username;
-	user.password = values.password;
+	if(values.email) user.email = values.email;
+	if(values.username) user.username = values.username;
+	if(values.password) user.password = values.password;
+}
+
+function processError(err) {
+	var field = err.message.indexOf('username') !== -1 ? 'username' : 'email';
+	var errMsg = err.code === 11000 ? field + " already in use." : err.message;
+	return {success: false, message: errMsg};
 }
 
 module.exports = {
@@ -26,9 +32,7 @@ module.exports = {
 			});
 		})
 		.catch(function(err) {
-			//if err.code === 11000 mongoose duplicate entry.
-			errMsg = err.code === 11000 ? errMsg : err;
-			res.json({ success: false, message: errMsg});
+			res.json(processError(err));
 		});
 	},
 
@@ -53,10 +57,14 @@ module.exports = {
 	},
 
 	putUserId: function(req, res) {
+		var dataToUpdate = {};
+		if(req.body.username) dataToUpdate.username = req.body.username;
+		if(req.body.password) dataToUpdate.password = req.body.password;
+
 		User.findById(req.params.user_id).exec()
 		.then(function(user) {
-			setUser(user, {email: req.body.email, username: req.body.username, password: req.body.password});
-			user.save();
+			setUser(user, dataToUpdate);
+			return user.save();
 		})
 		.then(function() {
 			res.json({ message: 'User updated!' });
