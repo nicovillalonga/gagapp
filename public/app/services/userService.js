@@ -2,7 +2,7 @@ angular.module('userService', [])
 	.factory('User', ['$http', function($http) {
 		// create a new object
 		var userFactory = {};
-		
+
 		// get a single user
 		userFactory.get = function(id) {
 			return $http.get('/api/users/' + id);
@@ -11,7 +11,7 @@ angular.module('userService', [])
 		// get a single user
 		userFactory.getByUsername = function(userName) {
 			return $http.get('/api/userName/' + userName);
-		};		
+		};
 
 		// get all users
 		userFactory.all = function() {
@@ -37,4 +37,3 @@ angular.module('userService', [])
 		// return our entire userFactory object
 		return userFactory;
 	}]);
-	
