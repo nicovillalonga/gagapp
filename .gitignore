@@ -31,6 +31,3 @@ dist
 # Personal configuration
 config.js
 server.js
-
-# Api Docs
-apidoc
