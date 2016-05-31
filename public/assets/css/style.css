@@ -6,6 +6,7 @@ main {
 ===================== */
 header .navbar {
   border-radius: 0;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.3);
 }
 
 .navbar-brand {
@@ -35,6 +36,7 @@ header .navbar {
 /* CARD
 ====================== */
 .card {
+  cursor: pointer;
   background-color: #F3F3F3;
   overflow: auto;
   border-radius: 7px;
@@ -42,9 +44,57 @@ header .navbar {
 
 .cardBody {
   border: 1px solid #dddddd;
-  border-radius: 7px;
+  border-radius: 2px 2px 2px 2px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
   background-color: white;
-  margin: 40px 0 40px 0;
+  margin: 20px 0 20px 0;
+}
+
+.cardTask {
+  min-height: 50px;
+  padding: 15px;
+}
+
+.card-text {
+  padding: 10%;
+}
+
+.editTask {
+  cursor: pointer;
+  top: -13px;
+}
+
+.createTask {
+  border-radius: 7px;
+  padding: 7%;
+}
+
+/* LIST
+====================== */
+.listContainer {
+  float: left;
+  border: 1px solid #dddddd;
+  border-radius: 2px 0 0 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  margin-right: 10px;
+}
+
+.listHeader {
+  text-align: center;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #dddddd;
+  margin-bottom: 8px;
+}
+
+.listContent {
+  min-height: 25px;
+  list-style: none;
+  margin-left: -40px;
+}
+
+.sortList {
+  margin-bottom: 5px;
+  cursor: move;
 }
 
 /* ANIMATIONS
