@@ -1,11 +1,11 @@
 <div class="col-sm-4">
-	<div class="card" style="cursor: pointer;">
-		<div class="card-header pull-right delete">
-			<span ng-if="owner" ng-click="remove()" class="glyphicon glyphicon-remove"></span>
-		</div>
+	<div class="card">		
 		<div class="card-body cardBody" ng-click="select()">
+			<div class="pull-right delete">
+				<span ng-if="owner" ng-click="remove()" class="glyphicon glyphicon-remove"></span>
+			</div>
 			<div style="clear: both;"></div>
-			<div class="card-text" style="padding: 10%;">
+			<div class="card-text">
 				{{text}}
 	    	</div>
 		</div>
