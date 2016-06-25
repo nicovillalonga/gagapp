@@ -14,11 +14,11 @@
 				<div class="container">
 
 					<div class="navbar-header col-sm-3">
-						<a href="/" class="navbar-brand"><span class="glyphicon glyphicon-fire text-danger"></span> gagapp</a>
+						<a href="/" class="navbar-brand"><span class="glyphicon glyphicon-blackboard"></span> DashManager</a>
 					</div>
 
 					<ul class="nav navbar-nav">
-						<li ng-if="loggedIn"><a href="/users"><span class="glyphicon glyphicon-user"></span> Users</a></li>
+						<li ng-if="showUsersTab()"><a href="/users"><span class="glyphicon glyphicon-user"></span> Users</a></li>
 						<li ng-if="loggedIn"><a href="/dashboards"><span class="glyphicon glyphicon-th-large"></span> Dashboards</a></li>
 					</ul>
 

@@ -19,7 +19,7 @@ module.exports = {
 		};
 		// find the user
 		// select the name username and password explicitly
-		User.findOne({username: req.body.username}).select('email username password validated').exec()
+		User.findOne({username: req.body.username}).exec()
 		.then(function(user) {
 			if (user) {
 				//if user is mail validated then checks the password 
@@ -38,6 +38,7 @@ module.exports = {
 						resJson = {
 							success: true,
 							message: 'Enjoy your token!',
+							rol: user.rol,
 							token: token
 						};
 					}

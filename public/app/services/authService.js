@@ -6,16 +6,16 @@ angular.module('authService', [])
 	// inject $q to return promise objects
 	// inject AuthToken to manage tokens
 	// ===================================================
-	.factory('Auth', ['$http', '$q', 'AuthToken', function($http, $q, AuthToken) {
+	.factory('Auth', ['$http', '$q', '$window', 'AuthToken', function($http, $q, $window, AuthToken) {
 		// create auth factory object
 		var authFactory = {};
-		
+
 		// log a user in
 		authFactory.login = function(username, password) {
 			// return the promise object and its data
 			return $http.post('/api/authenticate', {username: username, password: password})
 				.success(function(data) {
-					AuthToken.setToken(data.token);
+					AuthToken.setToken(data.token, data.rol);
 					return data;
 				}).error(function(err) {
 					console.log(err);
@@ -31,7 +31,12 @@ angular.module('authService', [])
 		// check if a user is logged in
 		// checks if there is a local token
 		authFactory.isLoggedIn = function() {
-			return AuthToken.getToken();
+			return AuthToken.hasToken();
+		};
+
+		// check in session storage if rol is 'admin'
+		authFactory.isAdmin = function() {
+			return $window.sessionStorage.getItem('rol') === 'admin';
 		};
 
 		// get the logged in user
@@ -65,20 +70,28 @@ angular.module('authService', [])
 	// ===================================================
 	.factory('AuthToken', ['$window', function($window) {
 		var authTokenFactory = {};
-		
-		// get the token out of local storage
+
+		// get the token out of session storage
 		authTokenFactory.getToken = function() {
 			return $window.sessionStorage.getItem('token');
 		};
 
+		// check if session storage has token
+		authTokenFactory.hasToken = function() {
+			return $window.sessionStorage.getItem('token') !== null;
+		};
+
 		// function to set token or clear token
 		// if a token is passed, set the token
-		// if there is no token, clear it from local storage
-		authTokenFactory.setToken = function(token) {
-			if (token)
+		// if there is no token, clear it from session storage
+		authTokenFactory.setToken = function(token, rol) {
+			if (token) {
 				$window.sessionStorage.setItem('token', token);
-			else
+				$window.sessionStorage.setItem('rol', rol);
+			}
+			else {
 				$window.sessionStorage.removeItem('token');
+			}
 		};
 
 
@@ -93,7 +106,7 @@ angular.module('authService', [])
 	// ===================================================
 	.factory('AuthInterceptor', ['$q', '$location', 'AuthToken', function($q, $location, AuthToken) {
 		var interceptorFactory = {};
-		
+
 		// this will happen on all HTTP requests
 		interceptorFactory.request = function(config) {
 			// grab the token
@@ -121,4 +134,3 @@ angular.module('authService', [])
 
 		return interceptorFactory;
 	}]);
-	
