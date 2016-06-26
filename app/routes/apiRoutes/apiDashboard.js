@@ -17,17 +17,6 @@ function isListSaved(reqObj) {
 	}
 }
 
-function saveIndexes(list, res) {
-	List.findById(list._id).exec()
-	.then(function(originaList) {
-		originaList.tasks = list.tasks;
-		return originaList.save();
-	})
-	.catch(function(err) {
-		res.send(err);
-	});
-}
-
 function saveDashboard(reqObj) {
 	var dashboard = reqObj.dashboard;
 	var req = reqObj.req;
@@ -41,6 +30,9 @@ function saveDashboard(reqObj) {
 
 	// save the dashboard and check for errors
 	dashboard.save()
+	.then(function(dash) {
+		res.send(dash);
+	})
 	.catch(function(err) {
 		errMsg = err.code === 11000 ? errMsg : err;
 		res.json({ success: false, message: errMsg});
@@ -71,7 +63,9 @@ module.exports = {
 				list.save()
 				.then(function(newList) {
 					dashboard.lists.push(newList._id);
-					((i === length - 1) && isListSaved(reqObj));
+					if(i === length-1) {
+						isListSaved(reqObj);
+					}
 				})
 				.catch(function(err) {
 					res.send(err);
@@ -110,12 +104,6 @@ module.exports = {
 		})
 		.catch(function(err) {
 			res.send(err);
-		});
-	},
-
-	updateTaskIndexes: function(req, res) {
-		req.body.lists.forEach(function(list) {
-			saveIndexes(list, res);
 		});
 	}
 };

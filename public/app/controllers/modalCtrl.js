@@ -1,7 +1,7 @@
 angular.module('modalCtrl', [])
 	.controller('modalController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'Task', 'dashId', 'target', 'index', 'close',
 	function($scope, $routeParams, $timeout, $element, $window, Dashboards, Task, dashId, target, index, close) {
-		
+
 		var taskId;
 		var listName;
 		var task;
@@ -15,17 +15,17 @@ angular.module('modalCtrl', [])
 			$scope.taskDescription = task.description;
 			$scope.activities = task.activities;
 		}
-		
+
 
 		/*var background;
 		var modalContent;
 		var modalContentClicked = false;
-		
+
 		$timeout(function() {
 			//register the click outside the modal to destroy since its not implemented
 			modalContent = document.querySelector('.modal-content');
 			background = document.querySelector('.fade');
-			
+
 			//set click listener to modal content to avoid destroy when its clicked
 			modalContent.addEventListener('click', setModalContentClicked);
 
@@ -73,7 +73,7 @@ angular.module('modalCtrl', [])
 
 			Task.createTask(task)
 			.then(function(dash) {
-				$scope.taskCreated = true;
+				$scope.taskSuccess = true;
 				$scope.close();
 			}).catch(function(err) {
 				console.log('Error on creating Task ' + err);
@@ -82,10 +82,25 @@ angular.module('modalCtrl', [])
 
 		$scope.close = function() {
 			$element.modal('hide');
-	 		$scope.$destroy();
+			$scope.$destroy();
 		};
 
-		//allow close modal on escape key press	
+		$scope.delete = function() {
+			var taskToDelete = {
+				dashId: dashId,
+				listName: listName
+			};
+
+			Task.deleteTask(taskId, taskToDelete)
+			.then(function(task) {
+				$scope.taskSuccess = true;
+				$scope.close();
+			}).catch(function(err) {
+				console.log('Error on deleting Task ' + err);
+			});
+		}
+
+		//allow close modal on escape key press
 		addEventListener('keydown', closeOnEscape);
 
 		function closeOnEscape(e) {
@@ -98,7 +113,7 @@ angular.module('modalCtrl', [])
 		//remove escape key press listener when modal is closed
 		$scope.$on('$destroy', function(){
 			removeEventListener('keydown', closeOnEscape);
-			close($scope.taskCreated, 500);
+			close($scope.taskSuccess, 500);
 		});
 
 		function saveActivitie(type, activitie) {
@@ -112,7 +127,7 @@ angular.module('modalCtrl', [])
 				"type": type,
 				"activitie": activitie
 			};
-			
+
 			task.activities.push(newActivitie);
 		};
 

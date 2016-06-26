@@ -41,11 +41,18 @@ angular.module('dashboardCtrl', [])
 		})();
 
 		 function handleUpdate(evt) {
-	        Dashboards.updateIndexes(evt.from.id, null, evt.oldIndex, evt.newIndex);
+	        Task.updateIndexes(evt.from.id, null, evt.oldIndex, evt.newIndex)
+			.then(function(data) {
+				updateDashboard();
+			});
 	    }
 
 		function handleAdd(evt) {
-	        Dashboards.updateIndexes(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex);
+	        Task.updateIndexes(evt.from.id, evt.to.id, evt.oldIndex, evt.newIndex)
+			.then(function(data) {
+				//TODO: fix bug task moved to other list, next tasks disapear.
+				updateDashboard();
+			});
 	    }
 
     	$scope.showModal = function(target, opts) {
@@ -63,7 +70,9 @@ angular.module('dashboardCtrl', [])
 			}).then(function(modal) {
 			    modal.element.modal();
 			    modal.close.then(function(result) {
-			    	(result && updateDashboard());
+					if(result) {
+						updateDashboard();
+					}
 			    });
 			}).catch(function(error) {
 				console.log(error);
