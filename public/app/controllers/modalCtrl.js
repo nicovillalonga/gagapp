@@ -1,14 +1,42 @@
 angular.module('modalCtrl', [])
-	.controller('modalController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'Task', 'dashId', 'target', 'index', 'close',
-	function($scope, $routeParams, $timeout, $element, $window, Dashboards, Task, dashId, target, index, close) {
+	.controller('modalController', ['$scope', '$routeParams', '$timeout', '$element', '$window', 'Dashboards', 'Task', 'User', 'dashId', 'target', 'index', 'close',
+	function($scope, $routeParams, $timeout, $element, $window, Dashboards, Task, User, dashId, target, index, close) {
 
 		var taskId;
 		var listName;
 		var task;
 
+		activate();
+
+		function activate() {
+			$scope.usersList = [];
+			$scope.selectedParticipants = [];
+			var userLogged = $window.sessionStorage.getItem('username');			
+			
+			Dashboards.getDashboard(dashId)
+			.then(function(dash) {
+				$scope.participants = dash.data.participants;	
+				if (userLogged === dash.data.owner) {
+					User.all().then(function(users) {
+						angular.forEach(users.data, function(user) {
+							if (user.username !== userLogged && !isParticipant(user.username)) {
+								$scope.usersList.push(user);
+							}					
+						});
+					});
+				}
+			}).catch(function(err) {
+				console.log('Error' + err);
+			});							
+		};		
+
+		function isParticipant(username) {
+			return ($scope.participants.indexOf(username)>=0) ? true : false;
+		};
+
 		if(dashId && target) {
 			taskId = target.currentTarget.id;
-			listName = target.currentTarget.parentNode.id;
+			listName = target.currentTarget.parentNode.id;			
 			task = Dashboards.getTask(listName, taskId);
 
 			$scope.taskName = task.name;
@@ -50,6 +78,31 @@ angular.module('modalCtrl', [])
 				modalContentClicked = false;
 			};
 		});*/
+		$scope.selectParticipant = function(username) {
+			var idx = $scope.selectedParticipants.indexOf(username);
+
+		    // is currently selected
+		    if (idx > -1) {
+		      $scope.selection.splice(idx, 1);
+		    }
+
+		    // is newly selected
+		    else {
+		      $scope.selectedParticipants.push(username);
+		    }
+		}
+
+		$scope.inviteParticipant = function() {			
+			if ($scope.selectedParticipants.length > 0) {
+				var dataToUpdate = {};
+				dataToUpdate.participants = $scope.selectedParticipants;
+				Dashboards.addParticipants(dashId, dataToUpdate)
+				.then(function(dash) {
+					$scope.message = dash.data.message;	
+					$scope.close();				
+				});
+			}
+		};
 
 		$scope.createDashboard = function() {
 			var user = $window.sessionStorage.getItem('username');

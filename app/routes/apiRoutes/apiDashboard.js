@@ -7,6 +7,16 @@ var User = require('../../models/user'),
 	config = require('../../../config'),
 	superSecret = config.secret;
 
+function setDash(dash, values) {
+	console.log('dash', dash);
+	console.log('values', values);
+	// set the dash information (comes from the request)	
+	if(values.participants) {
+		var allParticipants = dash.participants.concat(values.participants);
+		dash.participants = allParticipants;	
+	}	
+}
+
 function isListSaved(reqObj) {
 	if(reqObj.length !== reqObj.dashboard.lists.length) {
 		setTimeout(function () {
@@ -75,7 +85,7 @@ module.exports = {
 	},
 
 	getDashboardOwner: function(req, res) {
-		Dashboard.find({ $or: [{owner: req.params.owner}, {participants: {username: req.params.owner}} ]}).exec()
+		Dashboard.find({ $or: [{owner: req.params.owner}, {participants: { "$in": [req.params.owner]}} ]}).exec()
 		.then(function(dashboards) {
 			res.json(dashboards);
 		})
@@ -101,6 +111,23 @@ module.exports = {
 		})
 		.then(function() {
 			res.json({ message: 'Dashboard ' + req.params._id + ' Successfully deleted' });
+		})
+		.catch(function(err) {
+			res.send(err);
+		});
+	},
+
+	addParticipants: function(req, res) {
+		var dataToUpdate = {};		
+		if(req.body.participants) dataToUpdate.participants = req.body.participants;	
+
+		Dashboard.findById(req.params._id).exec()
+		.then(function(dash) {
+			setDash(dash, dataToUpdate);
+			return dash.save();
+		})
+		.then(function() {
+			res.json({ message: 'Dashboard updated!' });
 		})
 		.catch(function(err) {
 			res.send(err);

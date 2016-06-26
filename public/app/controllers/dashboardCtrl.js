@@ -3,14 +3,16 @@ angular.module('dashboardCtrl', [])
 	function($scope, $routeParams, $timeout, $window, Dashboards, ModalService, Task) {
 
 		var dashId = $routeParams.dashboard;
-		var dashLoaded = false;
+		var dashLoaded = false;		
+		var userLogged = $window.sessionStorage.getItem('username');
 
 		updateDashboard();
 
 		function updateDashboard() {
 			Dashboards.getDashboard(dashId)
 			.then(function(dash) {
-				$scope.lists = dash.data.lists;
+				$scope.lists = dash.data.lists;		
+				$scope.owner = dash.data.owner;
 				dashLoaded = true;
 				Dashboards.setActualDashboard(dash.data);
 			}).catch(function(err) {
@@ -92,5 +94,29 @@ angular.module('dashboardCtrl', [])
 			};
 
 			$scope.showModal(null, opts);
+		};
+
+		$scope.isOwner = function() {
+			return ($scope.owner === userLogged) ? true : false;
+		};
+
+		$scope.inviteParticipant = function() {			
+			var template = "app/views/pages/dashboards/modalParticipant.html";
+			ModalService.showModal({
+			    templateUrl: template,
+			    controller: "modalController",
+			    inputs: {
+			    	dashId: dashId,
+			    	target: false,
+			    	index: null
+			    }
+			}).then(function(modal) {
+			    modal.element.modal();
+			    modal.close.then(function(result) {
+			    	console.log('result close modal');					
+			    });
+			}).catch(function(error) {
+				console.log(error);
+			});
 		};
 	}]);
