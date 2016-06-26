@@ -46,7 +46,7 @@ angular.module('dashboardsService', [])
 
 		function setActualDashboard(dashboard) {
 			actualDash = dashboard;
-		}		
+		}
 
 		return {
 			addParticipants: addParticipants,

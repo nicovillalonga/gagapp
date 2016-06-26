@@ -97,7 +97,7 @@ angular.module('dashboardCtrl', [])
 		};
 
 		$scope.isOwner = function() {
-			return ($scope.owner === userLogged) ? true : false;
+			return $scope.owner === userLogged;
 		};
 
 		$scope.inviteParticipant = function() {			

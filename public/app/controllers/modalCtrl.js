@@ -21,7 +21,7 @@ angular.module('modalCtrl', [])
 						angular.forEach(users.data, function(user) {
 							if (user.username !== userLogged && !isParticipant(user.username)) {
 								$scope.usersList.push(user);
-							}					
+							}
 						});
 					});
 				}
@@ -31,12 +31,12 @@ angular.module('modalCtrl', [])
 		};		
 
 		function isParticipant(username) {
-			return ($scope.participants.indexOf(username)>=0) ? true : false;
+			return $scope.participants.indexOf(username) >= 0;
 		};
 
 		if(dashId && target) {
 			taskId = target.currentTarget.id;
-			listName = target.currentTarget.parentNode.id;			
+			listName = target.currentTarget.parentNode.id;
 			task = Dashboards.getTask(listName, taskId);
 
 			$scope.taskName = task.name;
