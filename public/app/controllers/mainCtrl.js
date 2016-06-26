@@ -4,7 +4,7 @@ angular.module('mainCtrl', [])
 
 		// get info if a person is logged in
 		$scope.loggedIn = Auth.isLoggedIn();
-		
+
 		// check to see if a user is logged in on every request
 		$rootScope.$on('$routeChangeStart', function() {
 			$scope.loggedIn = Auth.isLoggedIn();
@@ -12,17 +12,13 @@ angular.module('mainCtrl', [])
 			if($scope.loggedIn){
 				$scope.username = $window.sessionStorage.getItem('username');
 				if($location.path() === '/')
-					$location.path('/users');
+					$location.path('/dashboards');
 			}
 		});
 
-		$scope.goToDashboards = function() {
-			$location.path('/dashboards');
-		};
-
-		$scope.goToLogin = function() {
-			$location.path('/login');
-		};
+		$scope.showUsersTab = function () {
+			return $scope.loggedIn && Auth.isAdmin();
+		}
 
 		$scope.doLogin = function() {
 			$scope.processing = true;
@@ -41,7 +37,7 @@ angular.module('mainCtrl', [])
 				if (data.data.success) {
 					$window.sessionStorage.setItem('username', username);
 					$scope.isLoggedIn = true;
-					$location.path('/users');
+					$location.path('/dashboards');
 				} else
 					$scope.message = data.data.message;
 			});
@@ -53,6 +49,7 @@ angular.module('mainCtrl', [])
 			// reset all user info
 			$scope.user = {};
 			$window.sessionStorage.removeItem('username');
+			$window.sessionStorage.removeItem('rol');
 			$location.path('/login');
 		};
 

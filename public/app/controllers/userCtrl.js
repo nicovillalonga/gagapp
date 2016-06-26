@@ -98,8 +98,12 @@ angular.module('userCtrl', ['userService', 'socketService'])
 
 	// user controller for the main page
 	// inject the User factory
-	.controller('userController', ['$scope', 'User', 'socket',
-	function($scope, User, socket) {
+	.controller('userController', ['$scope', '$location', 'User', 'Auth', 'socket',
+	function($scope, $location, User, Auth, socket) {
+		if(!Auth.isAdmin()) {
+			$location.path('/dashboards');
+		}
+
 		// funtion to get all the users
 		$scope.getAllUsers = function(){
 			// set a processing variable to show loading things

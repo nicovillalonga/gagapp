@@ -7,9 +7,10 @@ var mongoose = require('mongoose'),
 	  	email: {type: String, required: true, unique: true},
 	  	username: { type: String, required: true, index: { unique: true }},
 	  	password: { type: String, required: true}, //, select: false no devuleve el campo por defecto
+			rol: { type: String, default: "user" },
 	    validated: {type: Boolean, default: false},
 	    validatorId: {type: String},
-		createdDate: {type: Date, default: Date.now}
+			createdDate: {type: Date, default: Date.now}
 	});
 
 // hash the password before the user is saved
