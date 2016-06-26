@@ -8,8 +8,6 @@ var User = require('../../models/user'),
 	superSecret = config.secret;
 
 function setDash(dash, values) {
-	console.log('dash', dash);
-	console.log('values', values);
 	// set the dash information (comes from the request)	
 	if(values.participants) {
 		var allParticipants = dash.participants.concat(values.participants);
