@@ -162,6 +162,16 @@ module.exports = function(app, express) {
 	 * @apiSuccess {Object} dashboard dashboard selected.	 
 	 */
 	 /**
+	 * @api {put} /dashboard/:_id Add Participants
+	 * @apiName Add participants
+	 * @apiGroup Dashboard
+	 *
+	 * @apiParam {String} _id _id of the dashboard selected.
+	 * @apiParam {Object} participants req.body.participants	 
+	 *
+     * @apiSuccess {String} message updated.	 
+	 */
+	 /**
 	 * @api {delete} /dashboards/:_id Delete Dashboard by Id
 	 * @apiName Delete dashboard by id
 	 * @apiGroup Dashboard
@@ -172,6 +182,7 @@ module.exports = function(app, express) {
 	 */
 	apiRouter.route('/dashboard/:_id')
 		.get(apiDashboards.getDashboardId)
+		.put(apiDashboards.addParticipants)
 		.delete(apiDashboards.deleteDashboardId);
 
     /**

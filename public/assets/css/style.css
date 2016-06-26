@@ -10,7 +10,7 @@ header .navbar {
 }
 
 .navbar-brand {
-  margin-top: -5px;
+  margin: -2px -17px;
 }
 
 .buttonBack {
@@ -30,7 +30,7 @@ header .navbar {
 }
 
 .delete {
-  padding: 2% 3% 0 0;
+  margin: 19px 1px 0 0;
 }
 
 /* CARD
@@ -67,6 +67,10 @@ header .navbar {
 .createTask {
   border-radius: 7px;
   padding: 7%;
+}
+
+.inviteParticipant {
+  margin-bottom: 5px;
 }
 
 /* LIST

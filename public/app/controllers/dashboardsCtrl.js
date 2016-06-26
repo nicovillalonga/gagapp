@@ -22,7 +22,7 @@ angular.module('dashboardsCtrl', [])
 
 			$scope.participantDashboards = dashboards.filter(function(dash) {
 				return dash.participants.some(function(participant) {
-					return isUser(participant.username);
+					return isUser(participant);
 				});
 			});
 		};

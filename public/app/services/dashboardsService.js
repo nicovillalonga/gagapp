@@ -4,6 +4,10 @@ angular.module('dashboardsService', [])
 
 		var actualDash;
 
+		function addParticipants(id, participants) {
+			return $http.put('/api/dashboard/' + id, participants);
+		}
+
 		function getAllDashboards(owner) {
 			return $http.get('/api/dashboards/' + owner);
 		}
@@ -45,6 +49,7 @@ angular.module('dashboardsService', [])
 		}
 
 		return {
+			addParticipants: addParticipants,
 			createDashboard: createDashboard,
 			getAllDashboards: getAllDashboards,
 			remove: remove,
