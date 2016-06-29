@@ -39,6 +39,8 @@ angular.module('modalCtrl', [])
 			listName = target.currentTarget.parentNode.id;
 			task = Dashboards.getTask(listName, taskId);
 
+			console.log('task', task);
+
 			$scope.taskName = task.name;
 			$scope.taskDescription = task.description;
 			$scope.activities = task.activities;
@@ -169,28 +171,32 @@ angular.module('modalCtrl', [])
 			close($scope.taskSuccess, 500);
 		});
 
-		function saveActivitie(type, activitie) {
-			var id = Math.floor((Math.random() * 100) + 1);
+		function saveActivity(type, text) {
 			var date = new Date();
 			date = date.toString().split(' ').slice(0, -2).join(' ');
-			var newActivitie = {
-				"id": id,
+			var newActivity = {
 				"date": date,
 				"user": $window.sessionStorage.getItem('username'),
 				"type": type,
-				"activitie": activitie
+				"text": text
 			};
 
-			task.activities.push(newActivitie);
+			Task.saveActivity(newActivity, taskId, listName)
+			.then(function(data) {
+				console.log('data', data);
+				console.log('$scope.activities', $scope.activities);
+				$scope.activities.push(data.data.activity);
+				console.log('$scope.activities', $scope.activities);
+			});
 		};
 
 		$scope.saveDescription = function(evt) {
 			var description = document.querySelector('.description').value;
-			saveActivitie('description', description);
+			saveActivity('description', description);
 		};
 
 		$scope.saveComment = function(evt) {
 			var comment = document.querySelector('.comment').value;
-			saveActivitie('comment', comment);
+			saveActivity('comment', comment);
 		};
 	}]);

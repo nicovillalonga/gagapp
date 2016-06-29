@@ -2,7 +2,8 @@
 
 var Dashboard = require('../../models/dashboard'),
 	List = require('../../models/list'),
-	Task = require('../../models/task');
+	Task = require('../../models/task'),
+	Activity = require('../../models/activity');
 
 function _setListIndexes(tasks, index) {
 	var length = tasks.length;
@@ -133,5 +134,76 @@ module.exports = {
 			.catch(function(err) {
 				res.send(err);
 			});
+	},
+
+	saveActivity: function(req, res) {
+		var activity = new Activity();
+		var list;
+		var task;
+
+		activity.type = req.body.type;
+		activity.text = req.body.text;
+		activity.user = req.body.user;
+		activity.date = req.body.date;
+
+		console.log('*** req.body ***', req.body.text);
+		console.log('*** activity ***', activity.text);
+
+		List.findById(req.body.listId).exec()
+		.then(function(resultList) {
+			list = resultList;
+			task = list.tasks.filter(function(task) {
+				return task._id.toString() === req.body.taskId;
+			})[0];
+
+			task.activities.push(activity);
+			console.log('*** task ***', task);
+			console.log('task', list.tasks);
+
+			return list.save();
+		})
+		.then(function() {
+			console.log('exito', activity);
+			res.json({ message: 'Activity saved', activity: activity });
+		})
+		.catch(function(err) {
+			console.log('error', err);
+			res.send(err);
+		})
+
+
+
+		/*
+		List.findById(req.body.listId).exec()
+		.then(function(list) {
+			console.log('*** tasks ***', list.tasks);
+			console.log('*** taskId ***', req.body.taskId);
+			
+			task = list.tasks.filter(function(task) {
+				console.log('------------------------------');
+				console.log(typeof task._id.toString());
+				console.log(typeof req.body.taskId);
+				console.log(task._id);
+				console.log(req.body.taskId);
+				console.log(task._id.toString() === req.body.taskId);
+				console.log('------------------------------');
+				return task._id.toString() === req.body.taskId;
+			});
+			console.log('*** task ***', task);
+			task.activities.push(activity);
+			console.log('*** task ***', task);
+
+			return list.save();
+		})
+		.then(function(list) {
+			console.log('*** exito ***', list);
+			res.json({ message: 'Activity saved', activity: activity });
+		})
+		.catch(function(err) {
+			console.log('*** error ***', err);
+			res.send(err);
+		});
+		*/
+
 	}
 };

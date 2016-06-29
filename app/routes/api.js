@@ -223,6 +223,7 @@ module.exports = function(app, express) {
 	 * @apiSuccess {String} message Task Successfully deleted.
 	 */	
 	apiRouter.delete('/task/:_id/:dashId/:listName', apiTasks.deleteTask);
+	apiRouter.post('/activity', apiTasks.saveActivity);
 
 	return apiRouter;
 };

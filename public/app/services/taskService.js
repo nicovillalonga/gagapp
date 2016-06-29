@@ -46,9 +46,24 @@ angular.module('taskService', [])
 			}
 		}
 
+		function saveActivity(activity, taskId, listName) {
+			//get the list id
+			var listId = Dashboards.getActualDashboard()
+				.lists.slice()
+				.find(function(list) {
+					return list.name === listName;
+				})._id;
+
+			activity.listId = listId;
+			activity.taskId = taskId;
+
+			return $http.post('/api/activity', activity);
+		}
+
 		return {
 			createTask: createTask,
 			updateIndexes: updateIndexes,
-			deleteTask: deleteTask
+			deleteTask: deleteTask,
+			saveActivity: saveActivity
 		};
 	}]);

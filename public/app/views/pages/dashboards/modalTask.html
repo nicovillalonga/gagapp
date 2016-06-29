@@ -46,7 +46,7 @@
 		      	<!--Activities section-->
 		      	<div class="row">
 		      		<div class="col-md-12">
-		      			<div ng-repeat="activitie in activities track by activitie.id">
+		      			<div ng-repeat="activitie in activities track by activitie._id">
 
 	      					<div class="row" style="background-color: #FAFAFA; border-radius: 7px; margin-left: 0;">
 			      				<div class="col-md-4">
@@ -57,7 +57,7 @@
 			      				</div>
 
 			      				<div class="col-md-12">
-			      					<p>{{activitie.activitie}}</p>
+			      					<p>{{activitie.activity}}</p>
 			      				</div>
                   </div>
 
